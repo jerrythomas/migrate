@@ -1,0 +1,96 @@
+log:
+  level: info
+
+health:
+  # maxEventLoopDelay: 1000
+  # maxHeapUsedBytes: 100000000
+  # maxRssBytes: 100000000       # This seems to be too low for tap tests.
+  # message: 'Under pressure!'
+  # retryAfter: 50
+  exposeStatusRoute:
+    url: '/alive'
+  # healthCheckInterval: 100
+
+swagger:
+  routePrefix: '/docs'
+  exposeRoute: true
+  mode: dynamic
+  swagger:
+    info:
+      title: 'Migrate Databases'
+      description: 'Building a database migration utility using Fastify & Bull.'
+      version: '1.0.0'
+    externalDocs:
+      url: 'https://swagger.io'
+      description: 'Find more info here'
+    host: 'localhost'
+    schemes:
+      - 'http'
+    consumes:
+      - 'application/json'
+    produces:
+      - 'application/json'
+metric:
+  interval: 1000
+
+queue:
+  redis:
+    host: REDIS_HOST
+    port: REDIS_PORT
+  threads: 8
+
+source:
+  database: mysql
+  connectionString: SOURCE_DB_URL
+
+target:
+  database: postgres
+  connectionString: TARGET_DB_URL
+  native: true
+
+priorities:
+  SCHEMA: 10
+  TABLE: 20      # Includes structure, constraints and indexes.
+  DATA: 30
+  REFERENCE: 40  # Referential constraints should be created only after data is loaded.
+  VIEW: 50
+
+mapping:
+
+  types:
+    mysql:
+      transform:
+        geometry: "`ST_AsText(${1})`"
+      postgres:
+        geometry: 'polygon'
+        # point
+        binary: 'bytea'
+        bit: 'boolean'
+        # char(n), character(n) char(n), character(n)
+        # date date
+        datetime: 'timestamp' # [without time zone]
+        # decimal(p,s), dec(p,s) decimal(p,s), dec(p,s)
+        double: 'double precision'
+        float: 'real'
+        #int, integer int, integer
+        mediumint: 'integer'
+        #numeric(p,s) numeric(p,s)
+        #smallint smallint
+        tinyblob: 'bytea'
+        blob: 'bytea'
+        mediumblob: 'bytea'
+        longblob: 'bytea'
+        tinyint: 'smallint'
+        tinytext: 'text'
+        mediumtext: 'text'
+        longtext: 'text'
+        #time: time [without time zone]
+        #timestamp timestamp [without time zone]
+        varbinary: 'bytea'
+        bigint_auto_increment: 'bigserial'
+        integer_auto_increment: 'serial'
+        int_auto_increment: 'serial'
+        smallint_auto_increment: 'smallserial'
+        tinyint_auto_increment: 'smallserial'
+        #varchar(n) varchar(n)
+        #varchar(max) text
