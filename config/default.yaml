@@ -39,24 +39,7 @@ queue:
     port: REDIS_PORT
   threads: 8
 
-source:
-  database: mysql
-  connectionString: SOURCE_DB_URL
-
-target:
-  database: postgres
-  connectionString: TARGET_DB_URL
-  native: true
-
-priorities:
-  SCHEMA: 10
-  TABLE: 20      # Includes structure, constraints and indexes.
-  DATA: 30
-  REFERENCE: 40  # Referential constraints should be created only after data is loaded.
-  VIEW: 50
-
 mapping:
-
   types:
     mysql:
       transform:

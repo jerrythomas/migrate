@@ -40,7 +40,7 @@ const Mapping = require('../../plugins/mapping');
 test('Mapping requires redis', (t) => {
   t.plan(1);
   const fastify = Fastify();
-
+  t.tearDown(fastify.close.bind(fastify));
   fastify.register(Mapping);
   fastify.ready((err) => {
     t.error(err);

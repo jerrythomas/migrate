@@ -2,12 +2,16 @@ const snakecase = require('./snakecase');
 
 const columnProperties = {
   name: { type: 'string' },
-  type: { type: 'string' },
-  size: { type: 'integer', nullable: true, minimum: 1 },
+  data_type: { type: 'string' },
   precision: { type: 'integer', nullable: true, minimum: 1 },
-  default: { type: 'string', nullable: true },
+  scale: { type: 'integer', nullable: true, minimum: 1 },
+  default_value: { type: 'string', nullable: true },
   position: { type: 'integer', minimum: 1 },
-  nullable: { type: 'boolean' },
+  is_nullable: { type: 'boolean' },
+  key: { type: 'string' },
+  comment: { type: 'string'},
+  extra: { type: 'string'},
+  generation_expression: { type: 'string'},
 };
 
 const foreignKeyProperties = {
@@ -25,6 +29,7 @@ const foreignKeyProperties = {
 
 const indexProperties = {
   name: { type: 'string' },
+  uniqueness: { type: 'boolean', default: false },
   columns: {
     type: 'array',
     minItems: 1,
@@ -43,7 +48,7 @@ const tableProperties = {
     items: {
       type: 'object',
       properties: columnProperties,
-      required: ['name', 'type', 'size', 'precision', 'default', 'nullable', 'position'],
+      required: ['name', 'data_type', 'precision', 'scale', 'default_value', 'is_nullable', 'position'],
     },
   },
   references: {
@@ -64,7 +69,7 @@ const tableProperties = {
     items: {
       type: 'object',
       properties: indexProperties,
-      required: ['name', 'columns'],
+      required: ['name', 'columns', 'uniqueness'],
     },
   },
 };

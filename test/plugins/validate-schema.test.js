@@ -1,26 +1,7 @@
-
 const { test } = require('tap');
-// const Fastify = require('fastify');
-// const Support = require('../../plugins/support');
-// const { merge } = require('lodash');
 const messages = require('../../common/messages');
 const { getSchema } = require('../../common/functions');
 const { build } = require('../helper');
-// const snakecase = require('../../models/snakecase');
-// test('Verify redis dependency', (t) => {
-//   t.plan(2);
-//   const fastify = Fastify();
-//   fastify.register(Support);
-//
-//   fastify.ready((err) => {
-//     t.error(err);
-//     try {
-//       const value = fastify.someSupport();
-//     } catch (err) {
-//       t.match(err.message, messages.MISSING_REDIS_PLUGIN);
-//     }
-//   });
-// });
 
 test('Snake case validations', (t) => {
   const scenarios = [

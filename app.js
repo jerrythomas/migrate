@@ -9,12 +9,18 @@ const FastifySwagger = require('fastify-swagger');
 const UnderPressure = require('under-pressure');
 const FastifyRedis = require('fastify-redis');
 const FastifyMetrics = require('fastify-metrics');
+const FastifyMysql = require('fastify-mysql');
+const FastifyPostgres = require('fastify-postgres');
+
 const { merge } = require('lodash');
 const validators = require('./common/validators');
 
 module.exports = function app(fastify, opts, next) {
   // config returns a read only object
   const NODE_ENV = process.env.NODE_ENV || 'dev';
+
+  //|| config.get('source.connectionString')
+
   const ajv = new Ajv({
     // the fastify defaults
     removeAdditional: true,
@@ -36,6 +42,19 @@ module.exports = function app(fastify, opts, next) {
       host: process.env.REDIS_HOST,
       port: process.env.REDIS_PORT,
     },
+    source: {
+      database: process.env.SOURCE_DB,
+      name: 'source',
+      connectionString: process.env.SOURCE_DB_URL
+    },
+    target: {
+      database: process.env.TARGET_DB,
+      name: 'target',
+      connectionString: process.env.TARGET_DB_URL
+    },
+    queue: {
+      threads: process.env.THREADS_PER_QUEUE
+    }
   };
   // Load external plugins
   fastify.register(FastifyNoIcon);
@@ -45,6 +64,28 @@ module.exports = function app(fastify, opts, next) {
   fastify.register(UnderPressure, options.health);
   fastify.register(FastifyRedis, options.redis);
 
+  switch(options.source.database){
+    case 'mysql':
+      fastify.register(FastifyMysql, options.source);
+      break;
+    case 'postgres':
+      fastify.register(FastifyPostgres, options.source);
+      break;
+    default:
+      break;
+  }
+
+  switch(options.target.database){
+    case 'mysql':
+      fastify.register(FastifyMysql, options.target);
+      break;
+    case 'postgres':
+      fastify.register(FastifyPostgres, options.target);
+      break;
+    default:
+      break;
+  }
+
   Object.keys(validators).forEach((keyword) => {
     ajv.addKeyword(keyword, {
       validate: validators[keyword],
@@ -53,10 +94,6 @@ module.exports = function app(fastify, opts, next) {
   });
 
   fastify.setSchemaCompiler((schema) => ajv.compile(schema));
-
-  // fastify.schemaCompiler = function (schema) {
-  //   return ajv.compile(schema);
-  // };
 
   // prom client uses some internal registry which is conflicted in parallel test runs
   if (NODE_ENV !== 'test') {

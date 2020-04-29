@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 const { test } = require('tap');
 const rimraf = require('rimraf');
 const Fastify = require('fastify');
@@ -10,24 +9,13 @@ const { build } = require('../helper');
 test('Mapping requires redis connection.', (t) => {
   t.plan(2);
   const fastify = Fastify();
-
+  t.tearDown(fastify.close.bind(fastify));
   fastify.register(FastifyBull);
 
   fastify.ready((err) => {
     t.ok(err);
     t.match(err.message, "The dependency 'fastify-redis' of plugin 'fastify-bull' is not registered");
     fastify.close();
-  });
-});
-
-test('Application queues', (t) => {
-  t.plan(2);
-  const app = build(t);
-
-  app.ready((err) => {
-    t.error(err);
-    t.same(Object.keys(app.queues), []);
-    app.close();
   });
 });
 
@@ -44,8 +32,16 @@ test('Custom path for scripts', (t) => {
   ];
 
   const expected = [
-    'zzz/one.js',
-    'zzz/two.js',
+    {
+      file: 'zzz/one.js',
+      queue: 'one',
+      task: 'first',
+    },
+    {
+      file: 'zzz/two.js',
+      queue: 'two',
+      task: 'second',
+    },
   ];
 
   files.forEach((item) => {
@@ -54,17 +50,22 @@ test('Custom path for scripts', (t) => {
 
   expected.forEach((item) => {
     const code = [
-      `export const name = '${path.basename(item, path.extname(item))}';`,
-      'export async function handler(server, job, done){',
+      'async function handler(server, job, done){',
       '  done()',
+      '}',
+      'module.exports = {',
+      `  queue: "${item.queue}",`,
+      `  task: "${item.task}",`,
+      '  handler: handler,',
       '}',
     ].join('\n');
 
-    fs.writeFileSync(item, code);
+    fs.writeFileSync(item.file, code);
   });
 
-  t.plan(4);
+  t.plan(expected.length * 2 + 2);
   const fastify = Fastify();
+  t.tearDown(fastify.close.bind(fastify));
   fastify.register(FastifyRedis);
   fastify.register(FastifyBull, {
     path: 'zzz',
@@ -72,15 +73,11 @@ test('Custom path for scripts', (t) => {
 
   fastify.ready((err) => {
     t.error(err);
-    t.equals(fastify.queues.length, 2);
-    fastify.queues.forEach((item, i) => {
-      let name = 'one';
-      if (i === 1) {
-        name = 'two';
-      }
-      t.equals(item.name, name);
+    t.same(Object.keys(fastify.queues), ['one', 'two']);
+    Object.entries(fastify.queues).forEach(([queueName, queue], i) => {
+      t.equals(queueName, expected[i].queue);
+      t.equals(Object.keys(queue.handlers)[0], expected[i].task);
     });
-
 
     fastify.close();
     rimraf.sync('zzz');
@@ -90,6 +87,7 @@ test('Custom path for scripts', (t) => {
 test('Invalid path specified', (t) => {
   t.plan(2);
   const fastify = Fastify();
+  t.tearDown(fastify.close.bind(fastify));
   fastify.register(FastifyRedis);
   fastify.register(FastifyBull, {
     path: 'xxx',
@@ -105,6 +103,7 @@ test('Invalid path specified', (t) => {
 test('File instead of folder', (t) => {
   t.plan(2);
   const fastify = Fastify();
+  t.tearDown(fastify.close.bind(fastify));
   fastify.register(FastifyRedis);
   fastify.register(FastifyBull, {
     path: 'yyy',
@@ -117,5 +116,34 @@ test('File instead of folder', (t) => {
     t.same(Object.keys(fastify.queues), []);
     fastify.close();
     rimraf.sync('yyy');
+  });
+});
+
+test('Application queues', (t) => {
+  const app = build(t);
+  const expected = {
+    'export-mysql': [
+      'data',
+      'schema',
+      'table',
+      'view',
+    ],
+    'import-postgres': [
+      'data',
+      'schema',
+      'table',
+      'view',
+    ],
+  };
+
+  t.plan(2 + Object.keys(expected).length);
+  app.ready((err) => {
+    t.error(err);
+    t.same(Object.keys(app.queues), Object.keys(expected));
+    Object.entries(app.queues).forEach(([key, queue]) => {
+      t.same(Object.keys(queue.handlers), expected[key]);
+    });
+
+    app.close();
   });
 });

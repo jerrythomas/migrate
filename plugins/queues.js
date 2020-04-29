@@ -1,5 +1,7 @@
+/* eslint import/no-dynamic-require: 0 */
+/* eslint global-require: 0 */
 const FastifyPlugin = require('fastify-plugin');
-
+const Queue = require('bull');
 const fs = require('fs');
 const path = require('path');
 
@@ -36,29 +38,55 @@ function findQueueHandlers(root, log) {
   if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) {
     return [];
   }
-
-  const regex = new RegExp(`^${root}/([a-z|A-Z]+(/index)?.(js|ts))$`, 'g');
-  const files = walk(root).filter((file) => file.match(regex));
-
-  const queueList = [];
+  // include only javascript/typescript
+  const files = walk(root).filter((file) => path.extname(file).match('.(js|ts)$'));
+  const handlers = {};
 
   files.forEach((file) => {
-    const queueConfig = require(path.resolve(file));
-    if (queueConfig.name && queueConfig.handler) {
-      queueList.push(queueConfig);
+    const taskInfo = require(path.resolve(file));
+
+    if (taskInfo.queue && taskInfo.task && taskInfo.handler) {
+      handlers[taskInfo.queue] = handlers[taskInfo.queue] || [];
+      handlers[taskInfo.queue].push({
+        name: taskInfo.task,
+        handler: taskInfo.handler,
+        concurrency: taskInfo.concurrency || process.env.QUEUE_CONCURRENCY || 1,
+      });
     } else {
-      log.error({ file, msg: 'Queue name is not available.' });
+      log.error({ file, taskInfo, msg: 'Queue configuration is incomplete.' });
     }
   });
 
-  return queueList;
+  return handlers;
 }
 
 function FastifyBull(fastify, opts, next) {
-  // const connection = fastify.redis;
-  const queueHandlers = findQueueHandlers(opts.path || 'queues', fastify.log);
+  let taskQueues = {};
+  let queueHandlers;
+  let mockHandlers = opts.mock || false
+  // Support mocking handlers for tests.
+  if (mockHandlers){
+    queueHandlers = opts.queues;
+  } else {
+    queueHandlers = findQueueHandlers(opts.path || 'queues', fastify.log);
+  }
 
-  fastify.decorate('queues', queueHandlers);
+  Object.entries(queueHandlers).forEach(([name, tasks]) => {
+    const taskQ = new Queue(name, { connection: fastify.redis });
+    tasks.forEach((task) => {
+      taskQ.process(task.name, task.concurrency || 1, task.handler);
+    });
+    taskQueues[name] = taskQ;
+  });
+
+  fastify.addHook('onClose', (instance, done) => {
+    Object.values(instance.queues).forEach((queue) => {
+      queue.close();
+    });
+    done();
+  });
+
+  fastify.decorate('queues', taskQueues);
 
   next();
 }

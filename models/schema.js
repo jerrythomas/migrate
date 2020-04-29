@@ -5,10 +5,7 @@ const schemaProperties = {
   names: {
     type: 'array',
     minItems: 1,
-    items: {
-      type: 'string',
-      snakecase: true,
-    },
+    items: { type: 'string' },
   },
   drop: { type: 'boolean', default: true },
 };
