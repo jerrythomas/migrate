@@ -1,6 +1,8 @@
 
 // This file contains code that we reuse
 // between our tests.
+const fs = require('fs');
+const path = require('path');
 
 const Fastify = require('fastify');
 const FastifyPlugin = require('fastify-plugin');
@@ -9,7 +11,7 @@ const App = require('../app');
 // Fill in this config with all the configurations
 // needed for testing the application
 function config(mock=false) {
-
+  // console.log(mock)
   if (!mock){
     return {}
   }
@@ -31,7 +33,7 @@ function config(mock=false) {
       })
     })
   })
-
+  // console.log(mock, queues);
   return {mock, queues};
 }
 
@@ -50,7 +52,27 @@ function build(t, mock=false) {
   return app;
 }
 
+function buildTree(dest, tree, fileExt) {
+  let ext = ['js','ts','txt']
+  if (Array.isArray(fileExt)){
+    ext = fileExt
+  } else if (typeof(fileExt) === 'string') {
+    ext = [fileExt]
+  }
+
+  Object.entries(tree).map(([key, value]) => {
+    if (typeof(value) == 'string'){
+      let idx = Math.floor(Math.random()*ext.length)
+      fs.mkdirSync(dest, {recursive:true})
+      fs.writeFileSync(path.join(dest, key + '.' + ext[idx]), value);
+    } else {
+      buildTree(path.join(dest, key), value, ext)
+    }
+  })
+}
+
 module.exports = {
   config,
   build,
+  buildTree
 };

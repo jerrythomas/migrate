@@ -1,6 +1,30 @@
 const { test } = require('tap');
 const Fastify = require('fastify');
 const Mapping = require('../../plugins/mapping');
+
+test('Mapping works standalone', async (t) => {
+  const fastify = Fastify()
+  t.tearDown(fastify.close.bind(fastify));
+
+  fastify.register(Mapping);
+  await fastify.ready()
+  t.ok(Object.keys(fastify.mapping).length > 0);
+  t.end();
+});
+
+test('Mapping content', async (t) => {
+  const fastify = build(t)
+  console.log(Object.keys(fastify))
+
+  await fastify.ready()
+  console.log(fastify.mapping);
+  const errors = fastify.validateSchema(mappingSchema, fastify.mapping);
+
+  console.log(errors);
+  t.ok(fastify.mapping);
+  t.end()
+})
+
 // const { mappingSchema } = require('../../models/index');
 // const messages = require('../../common/messages');
 // require('dotenv').config();

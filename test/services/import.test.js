@@ -79,8 +79,8 @@ test('Invalid payload', (t) => {
       route: '/import/schema',
       body: {},
       expected: [
-        "body should have required property 'object', "
-        + "body should have required property 'names'",
+        //"body should have required property 'object', "
+        "body should have required property 'names'",
       ],
     },
     {
@@ -88,7 +88,7 @@ test('Invalid payload', (t) => {
       route: '/import/table',
       body: {},
       expected: [
-        "body should have required property 'object'",
+        //"body should have required property 'object'",
         "body should have required property 'schema'",
         "body should have required property 'table'",
         "body should have required property 'columns'",
@@ -101,7 +101,7 @@ test('Invalid payload', (t) => {
       route: '/import/view',
       body: {},
       expected: [
-        "body should have required property 'object'",
+        //"body should have required property 'object'",
         "body should have required property 'schema'",
         "body should have required property 'view'",
         "body should have required property 'code'",
@@ -113,7 +113,7 @@ test('Invalid payload', (t) => {
       route: '/import/data',
       body: {},
       expected: [
-        "body should have required property 'object'",
+        //"body should have required property 'object'",
         "body should have required property 'schema'",
         "body should have required property 'table'",
         "body should have required property 'data'",
@@ -123,11 +123,11 @@ test('Invalid payload', (t) => {
       message: 'Invalid types for attributes',
       route: '/import/schema',
       body: {
-        object: '',
+        //object: '',
         names: '',
       },
       expected: [
-        'body.object should be equal to one of the allowed values',
+        //'body.object should be equal to one of the allowed values',
         'body.names should be array',
       ],
     },
@@ -135,7 +135,7 @@ test('Invalid payload', (t) => {
       message: 'Invalid data in body',
       route: '/import/schema',
       body: {
-        object: 'schema',
+        //object: 'schema',
         names: [],
       },
       expected: [
@@ -146,7 +146,7 @@ test('Invalid payload', (t) => {
       message: 'Invalid types for attributes',
       route: '/import/table',
       body: {
-        object: '',
+        //object: '',
         schema: '',
         table: '',
         drop: null,
@@ -156,7 +156,9 @@ test('Invalid payload', (t) => {
         indexes: null,
       },
       expected: [
-        'body.object should be equal to one of the allowed values',
+        //'body.object should be equal to one of the allowed values',
+        'body.schema should NOT be shorter than 1 characters',
+        'body.table should NOT be shorter than 1 characters',
         'body.columns should be array',
         'body.references should be array',
         'body.key should be object',
@@ -167,7 +169,7 @@ test('Invalid payload', (t) => {
       message: 'Invalid types for attributes',
       route: '/import/table',
       body: {
-        object: 'table',
+        //object: 'table',
         schema: 'sc',
         table: 'test',
         columns: [],
@@ -184,7 +186,7 @@ test('Invalid payload', (t) => {
       message: 'Incomplete payload',
       route: '/import/table',
       body: {
-        object: 'table',
+        // object: 'table',
         schema: 'sc',
         table: 'test',
         columns: [{}],
@@ -196,12 +198,12 @@ test('Invalid payload', (t) => {
       },
       expected: [
         "body.columns[0] should have required property 'name'",
-        "body.columns[0] should have required property 'type'",
-        "body.columns[0] should have required property 'size'",
+        "body.columns[0] should have required property 'data_type'",
         "body.columns[0] should have required property 'precision'",
+        "body.columns[0] should have required property 'scale'",
         "body.columns[0] should have required property 'default'",
         "body.columns[0] should have required property 'position'",
-        "body.columns[0] should have required property 'nullable'",
+        "body.columns[0] should have required property 'is_nullable'",
         "body.references[0] should have required property 'name'",
         "body.references[0] should have required property 'refers'",
         'body.key.columns should NOT have fewer than 1 items',
@@ -213,17 +215,18 @@ test('Invalid payload', (t) => {
       message: 'Incomplete payload',
       route: '/import/table',
       body: {
-        object: 'table',
+        //object: 'table',
         schema: 'sc',
         table: 'test',
         columns: [{
           name: '',
-          type: '',
+          data_type: '',
           size: null,
           precision: null,
+          scale: null,
           default: null,
           position: null,
-          nullable: '',
+          is_nullable: '',
         }],
         references: [{
           name: '',
@@ -239,7 +242,7 @@ test('Invalid payload', (t) => {
       },
       expected: [
         'body.columns[0].position should be >= 1',
-        'body.columns[0].nullable should be boolean',
+        'body.columns[0].is_nullable should be boolean',
         "body.references[0].refers should have required property 'schema'",
         "body.references[0].refers should have required property 'table'",
         "body.references[0].refers should have required property 'columns'",
@@ -250,18 +253,18 @@ test('Invalid payload', (t) => {
       message: 'Incomplete payload',
       route: '/import/table',
       body: {
-        object: 'table',
+        //object: 'table',
         schema: 'kingdom',
         table: 'koala_bear',
         columns: [
           {
             name: '',
-            type: '',
-            size: -1,
+            data_type: '',
             precision: -1,
+            scale: -1,
             default: -1,
             position: -1,
-            nullable: false,
+            is_nullable: false,
           },
         ],
         references: [
@@ -285,8 +288,8 @@ test('Invalid payload', (t) => {
         ],
       },
       expected: [
-        'body.columns[0].size should be >= 1',
         'body.columns[0].precision should be >= 1',
+        'body.columns[0].scale should be >= 1',
         'body.columns[0].position should be >= 1',
         'body.references[0].refers.columns should NOT have fewer than 1 items',
         'body.indexes[0].columns should NOT have fewer than 1 items',
@@ -296,14 +299,14 @@ test('Invalid payload', (t) => {
       name: 'Incomplete payload',
       route: '/import/view',
       body: {
-        object: 'delete',
+        //object: 'delete',
         schema: '',
         view: '',
         code: '',
         drop: false,
       },
       expected: [
-        'body.object should be equal to one of the allowed values',
+        //'body.object should be equal to one of the allowed values',
         'body.code should NOT be shorter than 17 characters',
       ],
     },
@@ -311,13 +314,13 @@ test('Invalid payload', (t) => {
       name: 'Incorrect type',
       route: '/import/data',
       body: {
-        object: '',
+        //object: '',
         schema: {},
         table: [],
         data: [],
       },
       expected: [
-        'body.object should be equal to one of the allowed values',
+        //'body.object should be equal to one of the allowed values',
         'body.schema should be string',
         'body.table should be string',
         'body.data should be object',
@@ -327,7 +330,7 @@ test('Invalid payload', (t) => {
       name: 'Invalid schema, table, data',
       route: '/import/data',
       body: {
-        object: 'data',
+        //object: 'data',
         schema: 'schema Name',
         table: 'some table name',
         data: {},
@@ -383,7 +386,7 @@ test('Valid payload', (t) => {
       message: 'Valid payload',
       route: '/import/schema',
       body: {
-        object: 'schema',
+        //object: 'schema',
         names: [
           'sc',
         ],
@@ -393,37 +396,37 @@ test('Valid payload', (t) => {
       message: 'Valid payload',
       route: '/import/table',
       body: {
-        object: 'table',
+        //object: 'table',
         schema: 'animals',
         table: 'koala_bear',
         drop: false,
         columns: [
           {
             name: 'id',
-            type: 'uuid',
-            size: null,
+            data_type: 'uuid',
             precision: null,
+            scale: null,
             default: null,
             position: 1,
-            nullable: false,
+            is_nullable: false,
           },
           {
             name: 'kingdom_id',
-            type: 'uuid',
-            size: null,
+            data_type: 'uuid',
             precision: null,
+            scale: null,
             default: null,
             position: 1,
-            nullable: false,
+            is_nullable: false,
           },
           {
             name: 'name',
-            type: 'varchar',
-            size: 30,
-            precision: null,
+            data_type: 'varchar',
+            precision: 30,
+            scale: 2,
             default: null,
             position: 1,
-            nullable: false,
+            is_nullable: false,
           },
         ],
         references: [
@@ -453,7 +456,7 @@ test('Valid payload', (t) => {
       message: 'Valid payload',
       route: '/import/view',
       body: {
-        object: 'view',
+        //object: 'view',
         schema: 'animals',
         view: 'all_animals_vw',
         code: 'select * from tab;',
@@ -464,7 +467,7 @@ test('Valid payload', (t) => {
       message: 'Valid payload',
       route: '/import/data',
       body: {
-        object: 'data',
+        //object: 'data',
         schema: 'schema_name',
         table: 'table_name',
         data: {

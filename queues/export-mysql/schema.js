@@ -1,22 +1,30 @@
 const { schema } = require('../../models');
+const ValidationError = require('../../common/errors');
+const jq = require('node-jq');
 
-async function exportSchemas(fastify, job, done) {
-  const { database, queries} = fastify.mapping.source
+async function exportSchemas(fastify, job) { //, done) {
+  const database = fastify.mapping.source.database
   const db = fastify[database].source
+  const queries = fastify.scripts.sql[database]
 
+  let jobs = []
   let errors = fastify.validateSchema(schema.exportSchema, job.data);
 
-  try {
-    if (errors.length > 0) {
-      throw new Error('Input data does not match expected format.');
-    }
-    const [rows] = await db.query(queries.ref_tables, [job.data.names]);
+  if (errors.length > 0) {
+    throw new ValidationError('Input data does not match expected format.', {errors});
+  }
+
+  // try {
+
+    let [rows] = await db.query(queries.tables, [job.data.names]);
+
     let result = await jq.run(fastify.jq.group_by_priority,
-                                JSON.stringify(rows),
-                                { input: 'string' , output: 'json'});
+                              JSON.stringify(rows),
+                              { input: 'string' , output: 'json'});
+    //let result = transform(rows)
 
     if (result.schema.names.length === 0){
-      throw new Error(`Nothing to export matching schemas ${job.data.names}`)
+      throw new ValidationError('Nothing to export matching schemas', {schemas: job.data.names})
     }
 
     let missing = job.data.names.filter(name => !result.schema.names.includes(name));
@@ -30,24 +38,37 @@ async function exportSchemas(fastify, job, done) {
     });
 
     result.schema.names = [...new Set([...result.schema.names, ...job.data.names])]
+    // check additional names and send warning
+    let {name, data, opts} = await fastify.queues[fastify.mapping.importQueue]
+                                          .add(result.schema.object,
+                                               result.schema,
+                                               {priority: fastify.priorities.schema})
 
-    fastify.queues[fastify.mapping.importQueue]
-           .add(result.schema.object,
-                result.schema,
-                {priority: fastify.priorities.schema})
+    if (process.env.NODE_ENV === 'test'){
+      opts = {priority: opts.priority};
+      jobs.push({name, data, opts})
+    }
 
-    result.groups.forEach((group) => {
+    await result.groups.map(async (group) => {
       let priority = fastify.priorities.table + group.priority
-      group.tables.forEach((item) => {
-        fastify.queues[fastify.mapping.exportQueue]
-               .add(item.object, item, {priority: priority})
+
+      await group.tables.map(async (item) => {
+        let {name, data, opts} = await fastify.queues[fastify.mapping.exportQueue]
+                                              .add(item.object, item, {priority: priority})
+
+        if (process.env.NODE_ENV === 'test'){
+          opts = {priority: opts.priority};
+          jobs.push({name, data, opts})
+        }
       })
     });
-    done(null, {status:'ok', warnings: errors})
 
-  } catch (error) {
-    done(error, {status: 'failed', errors})
-  }
+    //done(null, {status:'ok', warnings: errors, jobs})
+    return {status:'ok', warnings: errors, jobs};
+  // } catch (error) {
+  //     done(error, {status: 'failed', errors})
+  //   return {status: 'failed', errors};
+  // }
 }
 
 module.exports = {

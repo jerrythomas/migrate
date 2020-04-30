@@ -147,3 +147,13 @@ test('Application queues', (t) => {
     app.close();
   });
 });
+
+// If you prefer async/await, use the following
+//
+// test('support works standalone', async (t) => {
+//   const fastify = Fastify()
+//   fastify.register(Support)
+//
+//   await fastify.ready()
+//   t.equal(fastify.someSupport(), 'hugs')
+// })

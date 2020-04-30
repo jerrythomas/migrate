@@ -1,5 +1,10 @@
 const { merge } = require('lodash');
 const models = require('../models');
+const fs = require('fs');
+const path = require('path');
+const {omitBy, isNil} = require('lodash');
+
+const ValidationError = require('./errors');
 
 function toSnakeCase(input) {
   let result = input;
@@ -36,8 +41,50 @@ function getSchema(name, snakecase = false) {
   return schema;
 }
 
+/**
+ * Walk path and read the contents into an object tree to be used as a shared cache.
+ *
+ * @param {string} dir - path to be recursively scanned
+ * @param {string or Array} include - regex pattern to be matched or an array of file extensions
+ *        used for identifying which files are included in the scan. Default includes all files.
+ */
+function cacheTree(dir='.', include){
+  let tree = {};
+  let pattern = '.+';
+
+  if (!fs.existsSync(dir)){
+    throw new ValidationError("Specified path does not exist.", { dir, include })
+  }
+  if (!fs.statSync(dir).isDirectory()){
+    throw new ValidationError("Specified path is not a directory.", { dir, include })
+  }
+
+  const files = fs.readdirSync(dir);
+
+  if (Array.isArray(include)) {
+    pattern = '('+ include.join('|') + ')$'
+  } else if (typeof(include) === 'string') {
+    pattern = include
+  }
+
+  files.forEach((filename) => {
+    const filepath = path.join(dir, filename);
+
+    let key = path.basename(filename, path.extname(filename))
+    if (fs.statSync(filepath).isDirectory()) {
+      tree[key] = cacheTree(filepath, pattern);
+    } else {
+      if (path.extname(filename).match(pattern)) {
+        tree[key] = fs.readFileSync(filepath).toString('utf8') //.push(filepath);
+      }
+    }
+  });
+  tree = omitBy(tree, isNil)
+  return (Object.keys(tree).length === 0) ? null: tree;
+}
 module.exports = {
   toSnakeCase,
   renameKeys,
   getSchema,
+  cacheTree
 };

@@ -38,7 +38,7 @@ function getQueries(dir = '.'){
   const queries = {}
 
   files.forEach((file) => {
-    let dialect = path.dirname(file)
+    let dialect = path.basename(path.dirname(file))
     let name = path.basename(file, path.extname(file))
 
     queries[dialect] = queries[dialect] || {}
@@ -48,8 +48,30 @@ function getQueries(dir = '.'){
   return queries
 }
 
+function loadFilesAsObject(dir='.', types = ['.']){
+  let filepaths = {};
+  const files = fs.readdirSync(dir);
+  const pattern = '.('+ types.join('|') + ')$';
+
+  files.forEach((filename) => {
+    const filepath = path.join(dir, filename);
+
+    if (fs.statSync(filepath).isDirectory()) {
+      filepaths[filename] = loadFilesAsObject(filepath, pattern);
+    } else {
+      // console.log(path.extname(filename), filename)
+      if (path.extname(filename).match(pattern)) {
+        let key = path.basename(filename, path.extname(filename))
+        // console.log(filepath)
+        filepaths[key] = fs.readFileSync(filepath).toString('utf8') //.push(filepath);
+      }
+    }
+  });
+  return filepaths;
+}
+
 module.exports = fp(function mapping(fastify, opts, next) {
-  const queries = getQueries('queues/sql');
+  const queries = getQueries('queues/sql/');
   const source = process.env.SOURCE_DB;
   const target = process.env.TARGET_DB; //config.get('target.database')
 
@@ -67,6 +89,7 @@ module.exports = fp(function mapping(fastify, opts, next) {
     types: config.get('mapping.types'),
     exportQueue: `export-${source}`,
     importQueue: `import-${target}`,
+    jq: loadFilesAsObject('jq', ['jq']),
   });
 
   next();

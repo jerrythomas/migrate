@@ -114,7 +114,7 @@ test('Import succeeds for valid data', (t) => {
     },
   ];
 
-  const app = build(t);
+  const app = build(t, false);
   t.plan(1 + scenarios.length * 2);
 
   app.ready((err) => {

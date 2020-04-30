@@ -5,7 +5,7 @@ const columnProperties = {
   data_type: { type: 'string' },
   precision: { type: 'integer', nullable: true, minimum: 1 },
   scale: { type: 'integer', nullable: true, minimum: 1 },
-  default_value: { type: 'string', nullable: true },
+  default: { type: 'string', nullable: true },
   position: { type: 'integer', minimum: 1 },
   is_nullable: { type: 'boolean' },
   key: { type: 'string' },
@@ -38,9 +38,9 @@ const indexProperties = {
 };
 
 const tableProperties = {
-  object: { type: 'string', enum: ['table'] },
-  schema: { type: 'string' },
-  table: { type: 'string' },
+  // object: { type: 'string', enum: ['table'] },
+  schema: { type: 'string', minLength:1 },
+  table: { type: 'string', minLength:1 },
   drop: { type: 'boolean', default: false },
   columns: {
     type: 'array',
@@ -48,7 +48,7 @@ const tableProperties = {
     items: {
       type: 'object',
       properties: columnProperties,
-      required: ['name', 'data_type', 'precision', 'scale', 'default_value', 'is_nullable', 'position'],
+      required: ['name', 'data_type', 'precision', 'scale', 'default', 'is_nullable', 'position'],
     },
   },
   references: {
@@ -77,13 +77,13 @@ const tableProperties = {
 const exportSchema = {
   type: 'object',
   properties: tableProperties,
-  required: ['object', 'schema', 'table'],
+  required: ['schema', 'table'],
 };
 
 const importSchema = {
   type: 'object',
   properties: tableProperties,
-  required: ['object', 'schema', 'table', 'columns', 'references', 'indexes'],
+  required: ['schema', 'table', 'columns', 'references', 'indexes'],
 };
 
 const snakeCaseIndexProperties = {

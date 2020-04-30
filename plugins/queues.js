@@ -41,6 +41,7 @@ function findQueueHandlers(root, log) {
   // include only javascript/typescript
   const files = walk(root).filter((file) => path.extname(file).match('.(js|ts)$'));
   const handlers = {};
+  const concurrency = parseInt(process.env.QUEUE_CONCURRENCY || 1, 10);
 
   files.forEach((file) => {
     const taskInfo = require(path.resolve(file));
@@ -50,7 +51,7 @@ function findQueueHandlers(root, log) {
       handlers[taskInfo.queue].push({
         name: taskInfo.task,
         handler: taskInfo.handler,
-        concurrency: taskInfo.concurrency || process.env.QUEUE_CONCURRENCY || 1,
+        concurrency: taskInfo.concurrency || concurrency,
       });
     } else {
       log.error({ file, taskInfo, msg: 'Queue configuration is incomplete.' });
@@ -61,11 +62,13 @@ function findQueueHandlers(root, log) {
 }
 
 function FastifyBull(fastify, opts, next) {
-  let taskQueues = {};
-  let queueHandlers;
-  let mockHandlers = opts.mock || false
+  const taskQueues = {};
+  let queueHandlers = {};
+
+  // console.log('queue options', opts)
+  const mockHandlers = opts.mock || false;
   // Support mocking handlers for tests.
-  if (mockHandlers){
+  if (mockHandlers) {
     queueHandlers = opts.queues;
   } else {
     queueHandlers = findQueueHandlers(opts.path || 'queues', fastify.log);

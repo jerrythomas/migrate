@@ -43,11 +43,13 @@ module.exports = function app(fastify, opts, next) {
       port: process.env.REDIS_PORT,
     },
     source: {
+      promise: true,
       database: process.env.SOURCE_DB,
       name: 'source',
       connectionString: process.env.SOURCE_DB_URL
     },
     target: {
+      promise: true,
       database: process.env.TARGET_DB,
       name: 'target',
       connectionString: process.env.TARGET_DB_URL

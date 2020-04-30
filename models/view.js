@@ -1,7 +1,7 @@
 const snakecase = require('./snakecase');
 
 const viewProperties = {
-  object: { type: 'string', enum: ['view'] },
+  // object: { type: 'string', enum: ['view'] },
   schema: { type: 'string' },
   view: { type: 'string' },
   code: { type: 'string', minLength: 17 },
@@ -11,13 +11,13 @@ const viewProperties = {
 const exportSchema = {
   type: 'object',
   properties: viewProperties,
-  required: ['object', 'schema', 'view'],
+  required: ['schema', 'view'],
 };
 
 const importSchema = {
   type: 'object',
   properties: viewProperties,
-  required: ['object', 'schema', 'view', 'code', 'drop'],
+  required: ['schema', 'view', 'code', 'drop'],
 };
 
 const forceSnakeCase = {
