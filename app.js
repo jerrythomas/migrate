@@ -19,7 +19,7 @@ module.exports = function app(fastify, opts, next) {
   // config returns a read only object
   const NODE_ENV = process.env.NODE_ENV || 'dev';
 
-  //|| config.get('source.connectionString')
+  // || config.get('source.connectionString')
 
   const ajv = new Ajv({
     // the fastify defaults
@@ -46,17 +46,17 @@ module.exports = function app(fastify, opts, next) {
       promise: true,
       database: process.env.SOURCE_DB,
       name: 'source',
-      connectionString: process.env.SOURCE_DB_URL
+      connectionString: process.env.SOURCE_DB_URL,
     },
     target: {
-      promise: true,
+      // promise: true,
       database: process.env.TARGET_DB,
       name: 'target',
-      connectionString: process.env.TARGET_DB_URL
+      connectionString: process.env.TARGET_DB_URL,
     },
     queue: {
-      threads: process.env.THREADS_PER_QUEUE
-    }
+      threads: process.env.THREADS_PER_QUEUE,
+    },
   };
   // Load external plugins
   fastify.register(FastifyNoIcon);
@@ -66,7 +66,7 @@ module.exports = function app(fastify, opts, next) {
   fastify.register(UnderPressure, options.health);
   fastify.register(FastifyRedis, options.redis);
 
-  switch(options.source.database){
+  switch (options.source.database) {
     case 'mysql':
       fastify.register(FastifyMysql, options.source);
       break;
@@ -77,16 +77,16 @@ module.exports = function app(fastify, opts, next) {
       break;
   }
 
-  switch(options.target.database){
-    case 'mysql':
-      fastify.register(FastifyMysql, options.target);
-      break;
-    case 'postgres':
-      fastify.register(FastifyPostgres, options.target);
-      break;
-    default:
-      break;
-  }
+  // switch(options.target.database){
+  //   case 'mysql':
+  //     fastify.register(FastifyMysql, options.target);
+  //     break;
+  //   case 'postgres':
+  //     fastify.register(FastifyPostgres, options.target);
+  //     break;
+  //   default:
+  //     break;
+  // }
 
   Object.keys(validators).forEach((keyword) => {
     ajv.addKeyword(keyword, {

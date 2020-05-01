@@ -1,10 +1,7 @@
-
-const tap = require('tap');
+const { test } = require('tap');
 const { build } = require('../helper');
 
-const { test } = tap;
-
-test('Invalid methods', (t) => {
+test('Invalid methods', async (t) => {
   const routes = [
     '/export/schema',
     '/export/table',
@@ -30,22 +27,21 @@ test('Invalid methods', (t) => {
     });
   });
 
-  t.plan(2 * scenarios.length);
-  const app = build(tap);
-
-  scenarios.forEach((scenario) => {
-    app.inject({
+  t.plan(scenarios.length);
+  const app = build(t);
+  await app.ready();
+  const cases = await scenarios.map(async (scenario) => {
+    const res = await app.inject({
       method: scenario.method,
       url: scenario.route,
-    }, (err, res) => {
-      t.error(err);
-      t.deepEqual(JSON.parse(res.payload), scenario.expected);
     });
+    return t.deepEqual(JSON.parse(res.payload), scenario.expected);
   });
-  app.close();
+  await Promise.all(cases);
+  t.end();
 });
 
-test('No data in body', (t) => {
+test('No data in body', async (t) => {
   const routes = [
     '/export/schema',
     '/export/table',
@@ -53,34 +49,34 @@ test('No data in body', (t) => {
     '/export/data',
   ];
 
-  t.plan(2 * routes.length);
-  const app = build(tap);
+  t.plan(routes.length);
+  const app = build(t);
+  await app.ready();
 
-  routes.forEach((route) => {
-    app.inject({
+  const cases = await routes.map(async (route) => {
+    const res = await app.inject({
       method: 'post',
       url: route,
       body: null,
-    }, (err, res) => {
-      t.error(err);
-      t.deepEqual(JSON.parse(res.payload), {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'body should be object',
-      });
+    });
+    t.deepEqual(JSON.parse(res.payload), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'body should be object',
     });
   });
-  app.close();
+  await Promise.all(cases);
+  t.end();
 });
 
-test('Invalid payload', (t) => {
+test('Invalid payload', async (t) => {
   const scenarios = [
     {
       message: 'Empty object in body',
       route: '/export/schema',
       body: {},
       expected: [
-        //"body should have required property 'object'",
+        // "body should have required property 'object'",
         "body should have required property 'names'",
       ],
     },
@@ -89,7 +85,7 @@ test('Invalid payload', (t) => {
       route: '/export/table',
       body: {},
       expected: [
-        //"body should have required property 'object'",
+        // "body should have required property 'object'",
         "body should have required property 'schema'",
         "body should have required property 'table'",
       ],
@@ -99,7 +95,7 @@ test('Invalid payload', (t) => {
       route: '/export/view',
       body: {},
       expected: [
-        //"body should have required property 'object'",
+        // "body should have required property 'object'",
         "body should have required property 'schema'",
         "body should have required property 'view'",
       ],
@@ -109,7 +105,7 @@ test('Invalid payload', (t) => {
       route: '/export/data',
       body: {},
       expected: [
-        //"body should have required property 'object'",
+        // "body should have required property 'object'",
         "body should have required property 'schema'",
         "body should have required property 'table'",
       ],
@@ -118,11 +114,11 @@ test('Invalid payload', (t) => {
       message: 'Invalid data in body',
       route: '/export/schema',
       body: {
-        //object: 'table',
+        // object: 'table',
         names: '',
       },
       expected: [
-        //'body.object should be equal to one of the allowed values',
+        // 'body.object should be equal to one of the allowed values',
         'body.names should be array',
       ],
     },
@@ -130,7 +126,7 @@ test('Invalid payload', (t) => {
       message: 'Invalid data in body',
       route: '/export/schema',
       body: {
-        //object: 'schema',
+        // object: 'schema',
         names: [],
       },
       expected: [
@@ -141,36 +137,26 @@ test('Invalid payload', (t) => {
       message: 'Invalid types for attributes',
       route: '/export/table',
       body: {
-        //object: null,
+        // object: null,
         schema: null,
         table: null,
       },
       expected: [
-        "body.schema should NOT be shorter than 1 characters",
-        "body.table should NOT be shorter than 1 characters"
+        'body.schema should NOT be shorter than 1 characters',
+        'body.table should NOT be shorter than 1 characters',
       ],
     },
-    // {
-    //   message: 'Incomplete payload',
-    //   route: '/export/table',
-    //   body: {
-    //     object: "table",
-    //     schema: "sc",
-    //     table: ""
-    //   },
-    //   expected: []
-    // },
     {
       name: 'Incomplete payload',
       route: '/export/view',
       body: {
-        //object: 'delete',
+        // object: 'delete',
         schema: '',
         view: '',
         code: '',
       },
       expected: [
-        //'body.object should be equal to one of the allowed values',
+        // 'body.object should be equal to one of the allowed values',
         'body.code should NOT be shorter than 17 characters',
       ],
     },
@@ -178,137 +164,107 @@ test('Invalid payload', (t) => {
       name: 'Incorrect type',
       route: '/export/data',
       body: {
-        //object: '',
+        // object: '',
         schema: {},
         table: [],
       },
       expected: [
-        //'body.object should be equal to one of the allowed values',
+        // 'body.object should be equal to one of the allowed values',
         'body.schema should be string',
         'body.table should be string',
       ],
     },
-    // {
-    //   name: "Invalid schema, table, data",
-    //   route: '/export/data',
-    //   body: {
-    //     object: 'data',
-    //     schema: 'schema Name',
-    //     table: 'some table name',
-    //     data: {}
-    //   },
-    //   expected: [
-    //     '/schema value should be in snakecase',
-    //     '/table value should be in snakecase'
-    //   ]
-    // },
-    // {
-    //   name: "Invalid column names",
-    //   route: '/export/data',
-    //   body: {
-    //     object: 'data',
-    //     schema: 'schema_name',
-    //     table: 'table_name',
-    //     data: {
-    //       "column Name -": 'x',
-    //       "CamelCol": 'y'
-    //     }
-    //   },
-    //   expected: [
-    //     '"column Name -" is not in snakecase',
-    //     '"CamelCol" is not in snakecase'
-    //   ]
-    // }
   ];
 
-  t.plan(2 * scenarios.length);
-  const app = build(tap);
+  t.plan(scenarios.length);
+  const app = build(t);
+  await app.ready();
 
-  scenarios.forEach((scenario) => {
-    app.inject({
+  const cases = await scenarios.map(async (scenario) => {
+    const res = await app.inject({
       method: 'post',
       url: scenario.route,
       body: scenario.body,
-    }, (err, res) => {
-      t.error(err);
-      t.deepEqual(JSON.parse(res.payload), {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: scenario.expected.join(', '),
-      });
+    });
+    t.deepEqual(JSON.parse(res.payload), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: scenario.expected.join(', '),
     });
   });
-  app.close();
+  await Promise.all(cases);
+  t.end();
 });
 
-// test('Valid payload', (t) => {
-//   const scenarios = [
-//     {
-//       message: 'Valid payload',
-//       route: '/export/schema',
-//       body: {
-//         object: 'schema',
-//         action: 'create',
-//         names: [
-//           'sc',
-//         ],
-//       },
-//     },
-//     {
-//       message: 'Valid payload',
-//       route: '/export/table',
-//       body: {
-//         object: 'table',
-//         schema: 'sc',
-//         table: 'test',
-//       },
-//     },
-//     {
-//       message: 'Valid payload',
-//       route: '/export/view',
-//       body: {
-//         object: 'view',
-//         schema: 'sc',
-//         view: 'test',
-//       },
-//     },
-//     {
-//       message: 'Valid payload',
-//       route: '/export/data',
-//       body: {
-//         object: 'data',
-//         schema: 'sc',
-//         table: 'test',
-//       },
-//     },
-//   ];
-//   const keys = [
-//     'initiatedAt',
-//     'completedAt',
-//     'duration',
-//   ];
-//   t.plan(8 * scenarios.length);
-//   const app = build(tap);
-//
-//   scenarios.forEach((scenario) => {
-//     const expected = scenario.body;
-//     if (scenario.route !== '/export/data') expected.drop = true;
-//
-//     app.inject({
-//       method: 'post',
-//       url: scenario.route,
-//       body: scenario.body,
-//     }, (err, res) => {
-//       const payload = JSON.parse(res.payload);
-//       t.error(err);
-//       t.match(res.statusCode, 200);
-//       t.match(res.headers['content-type'], 'application/json; charset=utf-8');
-//       t.match(payload.message, 'task submitted');
-//       keys.forEach((key) => {
-//         t.ok(Object.keys(payload).includes(key));
-//       });
-//       t.deepEqual(payload.data, expected);
-//     });
-//   });
-//   app.close();
-// });
+test('Valid payload', async (t) => {
+  const scenarios = [
+    {
+      message: 'Valid payload',
+      route: '/export/schema',
+      body: {
+        object: 'schema',
+        action: 'create',
+        names: [
+          'sc',
+        ],
+      },
+    },
+    {
+      message: 'Valid payload',
+      route: '/export/table',
+      body: {
+        object: 'table',
+        schema: 'sc',
+        table: 'test',
+      },
+    },
+    {
+      message: 'Valid payload',
+      route: '/export/view',
+      body: {
+        object: 'view',
+        schema: 'sc',
+        view: 'test',
+      },
+    },
+    {
+      message: 'Valid payload',
+      route: '/export/data',
+      body: {
+        object: 'data',
+        schema: 'sc',
+        table: 'test',
+      },
+    },
+  ];
+  const keys = [
+    'initiatedAt',
+    'completedAt',
+    'duration',
+  ];
+
+  t.plan(7 * scenarios.length);
+  const app = build(t);
+  await app.ready();
+
+  const cases = await scenarios.map(async (scenario) => {
+    const expected = scenario.body;
+    if (scenario.route !== '/export/data') expected.drop = true;
+
+    const res = await app.inject({
+      method: 'post',
+      url: scenario.route,
+      body: scenario.body,
+    });
+    const payload = JSON.parse(res.payload);
+    t.match(res.statusCode, 200);
+    t.match(res.headers['content-type'], 'application/json; charset=utf-8');
+    t.match(payload.message, 'task submitted');
+    keys.forEach((key) => {
+      t.ok(Object.keys(payload).includes(key));
+    });
+    t.deepEqual(payload.data, expected);
+  });
+  await Promise.all(cases);
+  t.end();
+});

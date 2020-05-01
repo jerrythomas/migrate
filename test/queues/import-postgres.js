@@ -5,12 +5,12 @@ const Table = require('../../queues/import-postgres/table');
 const Data = require('../../queues/import-postgres/data');
 const View = require('../../queues/import-postgres/view');
 
-const tasks= {
+const tasks = {
   schema: Schema,
   table: Table,
   data: Data,
   view: View,
-}
+};
 
 test('Import fails for invalid data', (t) => {
   const scenarios = [

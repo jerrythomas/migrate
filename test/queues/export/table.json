@@ -1,0 +1,691 @@
+[
+  {
+    "input": {
+      "data": {
+        "table": "no_fk_data",
+        "schema": "exp_data",
+        "object": "table",
+        "drop": false
+      },
+      "opts": {
+        "priority": 2
+      }
+    },
+    "output": {
+      "status": "ok",
+      "jobs": [
+        {
+          "name": "table",
+          "data": {
+            "columns": [
+              {
+                "name": "id",
+                "data_type": "smallint",
+                "precision": null,
+                "scale": 0,
+                "default": null,
+                "position": 1,
+                "is_nullable": "NO",
+                "key_type": "PRI",
+                "comment": "",
+                "extra": "auto_increment",
+                "generator": ""
+              },
+              {
+                "name": "code",
+                "data_type": "char",
+                "precision": 15,
+                "scale": null,
+                "default": null,
+                "position": 2,
+                "is_nullable": "NO",
+                "key_type": "UNI",
+                "comment": "",
+                "extra": "",
+                "generator": ""
+              },
+              {
+                "name": "descr",
+                "data_type": "varchar",
+                "precision": 50,
+                "scale": null,
+                "default": null,
+                "position": 3,
+                "is_nullable": "NO",
+                "key_type": "",
+                "comment": "",
+                "extra": "",
+                "generator": ""
+              }
+            ],
+            "key": [
+              {
+                "position": 1,
+                "name": "id"
+              }
+            ],
+            "indexes": [
+              {
+                "name": "self_fk_data_fk",
+                "uniqueness": "false",
+                "columns": [
+                  {
+                    "name": "self_ref_id",
+                    "position": 1
+                  }
+                ]
+              },
+              {
+                "name": "self_fk_data_uk",
+                "uniqueness": "true",
+                "columns": [
+                  {
+                    "name": "code",
+                    "position": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "opts": {
+            "priority": 2
+          },
+          "queue": {
+            "name": "import-postgres"
+          }
+        },
+        {
+          "name": "data",
+          "data": {
+            "table": "no_fk_data",
+            "schema": "exp_data",
+            "object": "table",
+            "drop": false
+          },
+          "opts": {
+            "priority": 3
+          },
+          "queue": {
+            "name": "export-mysql"
+          }
+        },
+        {
+          "name": "references",
+          "data": {
+            "table": "no_fk_data",
+            "schema": "exp_data",
+            "object": "table",
+            "drop": false
+          },
+          "opts": {
+            "priority": 4
+          },
+          "queue": {
+            "name": "export-mysql"
+          }
+        }
+      ],
+      "warnings": []
+    },
+    "error": false
+  },
+  {
+    "input": {
+      "data": {
+        "table": "self_fk_data",
+        "schema": "exp_data",
+        "object": "table",
+        "drop": false
+      },
+      "opts": {
+        "priority": 2
+      }
+    },
+    "output": {
+      "status": "ok",
+      "jobs": [
+        {
+          "name": "table",
+          "data": {
+            "columns": [
+              {
+                "name": "id",
+                "data_type": "smallint",
+                "precision": null,
+                "scale": 0,
+                "default": null,
+                "position": 1,
+                "is_nullable": "NO",
+                "key_type": "PRI",
+                "comment": "",
+                "extra": "auto_increment",
+                "generator": ""
+              },
+              {
+                "name": "code",
+                "data_type": "char",
+                "precision": 15,
+                "scale": null,
+                "default": null,
+                "position": 2,
+                "is_nullable": "NO",
+                "key_type": "UNI",
+                "comment": "",
+                "extra": "",
+                "generator": ""
+              },
+              {
+                "name": "descr",
+                "data_type": "varchar",
+                "precision": 50,
+                "scale": null,
+                "default": null,
+                "position": 3,
+                "is_nullable": "NO",
+                "key_type": "",
+                "comment": "",
+                "extra": "",
+                "generator": ""
+              },
+              {
+                "name": "self_ref_id",
+                "data_type": "smallint",
+                "precision": null,
+                "scale": 0,
+                "default": null,
+                "position": 4,
+                "is_nullable": "YES",
+                "key_type": "MUL",
+                "comment": "",
+                "extra": "",
+                "generator": ""
+              }
+            ],
+            "key": [
+              {
+                "position": 1,
+                "name": "id"
+              }
+            ],
+            "indexes": [
+              {
+                "name": "self_fk_data_fk",
+                "uniqueness": "false",
+                "columns": [
+                  {
+                    "name": "self_ref_id",
+                    "position": 1
+                  }
+                ]
+              },
+              {
+                "name": "self_fk_data_uk",
+                "uniqueness": "true",
+                "columns": [
+                  {
+                    "name": "code",
+                    "position": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "opts": {
+            "priority": 2
+          },
+          "queue": {
+            "name": "import-postgres"
+          }
+        },
+        {
+          "name": "data",
+          "data": {
+            "table": "self_fk_data",
+            "schema": "exp_data",
+            "object": "table",
+            "drop": false
+          },
+          "opts": {
+            "priority": 3
+          },
+          "queue": {
+            "name": "export-mysql"
+          }
+        },
+        {
+          "name": "references",
+          "data": {
+            "table": "self_fk_data",
+            "schema": "exp_data",
+            "object": "table",
+            "drop": false
+          },
+          "opts": {
+            "priority": 4
+          },
+          "queue": {
+            "name": "export-mysql"
+          }
+        }
+      ],
+      "warnings": []
+    },
+    "error": false
+  },
+  {
+    "input": {
+      "data": {
+        "table": "dep_lookup",
+        "schema": "exp_dep",
+        "object": "table",
+        "drop": false
+      },
+      "opts": {
+        "priority": 2
+      }
+    },
+    "output": {
+      "status": "ok",
+      "jobs": [
+        {
+          "name": "table",
+          "data": {
+            "columns": [
+              {
+                "name": "id",
+                "data_type": "smallint",
+                "precision": null,
+                "scale": 0,
+                "default": null,
+                "position": 1,
+                "is_nullable": "NO",
+                "key_type": "PRI",
+                "comment": "",
+                "extra": "auto_increment",
+                "generator": ""
+              },
+              {
+                "name": "code",
+                "data_type": "char",
+                "precision": 15,
+                "scale": null,
+                "default": null,
+                "position": 2,
+                "is_nullable": "NO",
+                "key_type": "UNI",
+                "comment": "",
+                "extra": "",
+                "generator": ""
+              },
+              {
+                "name": "descr",
+                "data_type": "varchar",
+                "precision": 50,
+                "scale": null,
+                "default": null,
+                "position": 3,
+                "is_nullable": "NO",
+                "key_type": "",
+                "comment": "",
+                "extra": "",
+                "generator": ""
+              }
+            ],
+            "key": [
+              {
+                "position": 1,
+                "name": "id"
+              }
+            ],
+            "indexes": [
+              {
+                "name": "self_fk_data_fk",
+                "uniqueness": "false",
+                "columns": [
+                  {
+                    "name": "self_ref_id",
+                    "position": 1
+                  }
+                ]
+              },
+              {
+                "name": "self_fk_data_uk",
+                "uniqueness": "true",
+                "columns": [
+                  {
+                    "name": "code",
+                    "position": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "opts": {
+            "priority": 2
+          },
+          "queue": {
+            "name": "import-postgres"
+          }
+        },
+        {
+          "name": "data",
+          "data": {
+            "table": "dep_lookup",
+            "schema": "exp_dep",
+            "object": "table",
+            "drop": false
+          },
+          "opts": {
+            "priority": 3
+          },
+          "queue": {
+            "name": "export-mysql"
+          }
+        },
+        {
+          "name": "references",
+          "data": {
+            "table": "dep_lookup",
+            "schema": "exp_dep",
+            "object": "table",
+            "drop": false
+          },
+          "opts": {
+            "priority": 4
+          },
+          "queue": {
+            "name": "export-mysql"
+          }
+        }
+      ],
+      "warnings": []
+    },
+    "error": false
+  },
+  {
+    "input": {
+      "data": {
+        "table": "has_fk_data",
+        "schema": "exp_data",
+        "object": "table",
+        "drop": false
+      },
+      "opts": {
+        "priority": 3
+      }
+    },
+    "output": {
+      "status": "ok",
+      "jobs": [
+        {
+          "name": "table",
+          "data": {
+            "columns": [
+              {
+                "name": "id",
+                "data_type": "smallint",
+                "precision": null,
+                "scale": 0,
+                "default": null,
+                "position": 1,
+                "is_nullable": "NO",
+                "key_type": "PRI",
+                "comment": "",
+                "extra": "auto_increment",
+                "generator": ""
+              },
+              {
+                "name": "code",
+                "data_type": "char",
+                "precision": 15,
+                "scale": null,
+                "default": null,
+                "position": 2,
+                "is_nullable": "NO",
+                "key_type": "UNI",
+                "comment": "",
+                "extra": "",
+                "generator": ""
+              },
+              {
+                "name": "descr",
+                "data_type": "varchar",
+                "precision": 50,
+                "scale": null,
+                "default": null,
+                "position": 3,
+                "is_nullable": "NO",
+                "key_type": "",
+                "comment": "",
+                "extra": "",
+                "generator": ""
+              },
+              {
+                "name": "lookup_id",
+                "data_type": "smallint",
+                "precision": null,
+                "scale": 0,
+                "default": null,
+                "position": 4,
+                "is_nullable": "YES",
+                "key_type": "MUL",
+                "comment": "",
+                "extra": "",
+                "generator": ""
+              }
+            ],
+            "key": [
+              {
+                "position": 1,
+                "name": "id"
+              }
+            ],
+            "indexes": [
+              {
+                "name": "self_fk_data_fk",
+                "uniqueness": "false",
+                "columns": [
+                  {
+                    "name": "self_ref_id",
+                    "position": 1
+                  }
+                ]
+              },
+              {
+                "name": "self_fk_data_uk",
+                "uniqueness": "true",
+                "columns": [
+                  {
+                    "name": "code",
+                    "position": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "opts": {
+            "priority": 3
+          },
+          "queue": {
+            "name": "import-postgres"
+          }
+        },
+        {
+          "name": "data",
+          "data": {
+            "table": "has_fk_data",
+            "schema": "exp_data",
+            "object": "table",
+            "drop": false
+          },
+          "opts": {
+            "priority": 4
+          },
+          "queue": {
+            "name": "export-mysql"
+          }
+        },
+        {
+          "name": "references",
+          "data": {
+            "table": "has_fk_data",
+            "schema": "exp_data",
+            "object": "table",
+            "drop": false
+          },
+          "opts": {
+            "priority": 5
+          },
+          "queue": {
+            "name": "export-mysql"
+          }
+        }
+      ],
+      "warnings": []
+    },
+    "error": false
+  },
+  {
+    "input": {
+      "data": {
+        "table": "l2_fk_data",
+        "schema": "exp_data",
+        "object": "table",
+        "drop": false
+      },
+      "opts": {
+        "priority": 4
+      }
+    },
+    "output": {
+      "status": "ok",
+      "jobs": [
+        {
+          "name": "table",
+          "data": {
+            "columns": [
+              {
+                "name": "id",
+                "data_type": "smallint",
+                "precision": null,
+                "scale": 0,
+                "default": null,
+                "position": 1,
+                "is_nullable": "NO",
+                "key_type": "PRI",
+                "comment": "",
+                "extra": "auto_increment",
+                "generator": ""
+              },
+              {
+                "name": "code",
+                "data_type": "char",
+                "precision": 15,
+                "scale": null,
+                "default": null,
+                "position": 2,
+                "is_nullable": "NO",
+                "key_type": "",
+                "comment": "",
+                "extra": "",
+                "generator": ""
+              },
+              {
+                "name": "descr",
+                "data_type": "varchar",
+                "precision": 50,
+                "scale": null,
+                "default": null,
+                "position": 3,
+                "is_nullable": "NO",
+                "key_type": "",
+                "comment": "",
+                "extra": "",
+                "generator": ""
+              },
+              {
+                "name": "lookup_id",
+                "data_type": "smallint",
+                "precision": null,
+                "scale": 0,
+                "default": null,
+                "position": 4,
+                "is_nullable": "YES",
+                "key_type": "MUL",
+                "comment": "",
+                "extra": "",
+                "generator": ""
+              }
+            ],
+            "key": [
+              {
+                "position": 1,
+                "name": "id"
+              }
+            ],
+            "indexes": [
+              {
+                "name": "self_fk_data_fk",
+                "uniqueness": "false",
+                "columns": [
+                  {
+                    "name": "self_ref_id",
+                    "position": 1
+                  }
+                ]
+              },
+              {
+                "name": "self_fk_data_uk",
+                "uniqueness": "true",
+                "columns": [
+                  {
+                    "name": "code",
+                    "position": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "opts": {
+            "priority": 4
+          },
+          "queue": {
+            "name": "import-postgres"
+          }
+        },
+        {
+          "name": "data",
+          "data": {
+            "table": "l2_fk_data",
+            "schema": "exp_data",
+            "object": "table",
+            "drop": false
+          },
+          "opts": {
+            "priority": 5
+          },
+          "queue": {
+            "name": "export-mysql"
+          }
+        },
+        {
+          "name": "references",
+          "data": {
+            "table": "l2_fk_data",
+            "schema": "exp_data",
+            "object": "table",
+            "drop": false
+          },
+          "opts": {
+            "priority": 6
+          },
+          "queue": {
+            "name": "export-mysql"
+          }
+        }
+      ],
+      "warnings": []
+    },
+    "error": false
+  }
+]

@@ -1,7 +1,7 @@
 const snakecase = require('./snakecase');
 
 const schemaProperties = {
-  //object: { type: 'string', enum: ['schema'] },
+  // object: { type: 'string', enum: ['schema'] },
   names: {
     type: 'array',
     minItems: 1,

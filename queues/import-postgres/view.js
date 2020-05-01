@@ -1,5 +1,5 @@
 async function importView(fastify, job, done) {
-
+  done();
 }
 
 module.exports = {

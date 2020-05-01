@@ -1,5 +1,5 @@
 
-const models = require('../../models');
+const models = require('../models');
 
 function handleExport(fastify, request, reply) {
   const initiatedAt = new Date();

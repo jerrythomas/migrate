@@ -1,5 +1,5 @@
 async function importTable(fastify, job, done) {
-
+  done();
 }
 
 module.exports = {

@@ -4,6 +4,7 @@ const FastifyPlugin = require('fastify-plugin');
 const Queue = require('bull');
 const fs = require('fs');
 const path = require('path');
+const { merge } = require('lodash');
 
 /**
  * Walk path and return a list of files
@@ -34,14 +35,13 @@ function walk(dir) {
  * @param {String} root - Folder containing the queue handlers
  * @param {Logger} log - Instance of fastify
  */
-function findQueueHandlers(root, log) {
-  if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) {
+function findQueueHandlers(opts, log) {
+  if (!fs.existsSync(opts.path) || !fs.statSync(opts.path).isDirectory()) {
     return [];
   }
   // include only javascript/typescript
-  const files = walk(root).filter((file) => path.extname(file).match('.(js|ts)$'));
+  const files = walk(opts.path).filter((file) => path.extname(file).match('.(js|ts)$'));
   const handlers = {};
-  const concurrency = parseInt(process.env.QUEUE_CONCURRENCY || 1, 10);
 
   files.forEach((file) => {
     const taskInfo = require(path.resolve(file));
@@ -51,7 +51,7 @@ function findQueueHandlers(root, log) {
       handlers[taskInfo.queue].push({
         name: taskInfo.task,
         handler: taskInfo.handler,
-        concurrency: taskInfo.concurrency || concurrency,
+        concurrency: opts.concurrency,
       });
     } else {
       log.error({ file, taskInfo, msg: 'Queue configuration is incomplete.' });
@@ -71,7 +71,11 @@ function FastifyBull(fastify, opts, next) {
   if (mockHandlers) {
     queueHandlers = opts.queues;
   } else {
-    queueHandlers = findQueueHandlers(opts.path || 'queues', fastify.log);
+    const handlerOpts = merge(opts, {
+      path: opts.path || 'queues',
+      concurrency: opts.concurrency || 1,
+    });
+    queueHandlers = findQueueHandlers(handlerOpts, fastify.log);
   }
 
   Object.entries(queueHandlers).forEach(([name, tasks]) => {
@@ -84,13 +88,13 @@ function FastifyBull(fastify, opts, next) {
 
   fastify.addHook('onClose', (instance, done) => {
     Object.values(instance.queues).forEach((queue) => {
+      instance.log.info({ msg: 'Closing queue', queue: queue.name });
       queue.close();
     });
     done();
   });
 
   fastify.decorate('queues', taskQueues);
-
   next();
 }
 

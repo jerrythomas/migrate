@@ -1,5 +1,5 @@
 async function importSchemas(fastify, job, done) {
-
+  done();
 }
 
 module.exports = {

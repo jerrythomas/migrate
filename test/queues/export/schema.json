@@ -1,0 +1,107 @@
+{
+  "job": {
+    "data": {
+      "names": [
+        "exp_data",
+        "no_such_schema"
+      ],
+      "drop": true
+    }
+  },
+  "expected": {
+    "status": "ok",
+    "warnings": [
+      "\"no_such_schema\" does not contain any tables to export",
+      "\"exp_dep\" has referenced tables which will be exported."
+    ],
+    "jobs": [
+      {
+        "queue": {
+          "name": "import-postgres"
+        },
+        "name": "schema",
+        "data": {
+          "object": "schema",
+          "names": [
+            "exp_data",
+            "exp_dep",
+            "no_such_schema"
+          ]
+        },
+        "opts": {
+          "priority": 1
+        }
+      },
+      {
+        "queue": {
+          "name": "export-mysql"
+        },
+        "name": "table",
+        "data": {
+          "table": "no_fk_data",
+          "schema": "exp_data",
+          "object": "table"
+        },
+        "opts": {
+          "priority": 2
+        }
+      },
+      {
+        "queue": {
+          "name": "export-mysql"
+        },
+        "name": "table",
+        "data": {
+          "table": "self_fk_data",
+          "schema": "exp_data",
+          "object": "table"
+        },
+        "opts": {
+          "priority": 2
+        }
+      },
+      {
+        "queue": {
+          "name": "export-mysql"
+        },
+        "name": "table",
+        "data": {
+          "table": "dep_lookup",
+          "schema": "exp_dep",
+          "object": "table"
+        },
+        "opts": {
+          "priority": 2
+        }
+      },
+      {
+        "queue": {
+          "name": "export-mysql"
+        },
+        "name": "table",
+        "data": {
+          "table": "has_fk_data",
+          "schema": "exp_data",
+          "object": "table"
+        },
+        "opts": {
+          "priority": 3
+        }
+      },
+      {
+        "queue": {
+          "name": "export-mysql"
+        },
+        "name": "table",
+        "data": {
+          "table": "l2_fk_data",
+          "schema": "exp_data",
+          "object": "table"
+        },
+        "opts": {
+          "priority": 4
+        }
+      }
+    ]
+  }
+}

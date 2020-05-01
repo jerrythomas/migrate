@@ -9,9 +9,9 @@ const columnProperties = {
   position: { type: 'integer', minimum: 1 },
   is_nullable: { type: 'boolean' },
   key: { type: 'string' },
-  comment: { type: 'string'},
-  extra: { type: 'string'},
-  generation_expression: { type: 'string'},
+  comment: { type: 'string' },
+  extra: { type: 'string' },
+  generation_expression: { type: 'string' },
 };
 
 const foreignKeyProperties = {
@@ -39,8 +39,8 @@ const indexProperties = {
 
 const tableProperties = {
   // object: { type: 'string', enum: ['table'] },
-  schema: { type: 'string', minLength:1 },
-  table: { type: 'string', minLength:1 },
+  schema: { type: 'string', minLength: 1 },
+  table: { type: 'string', minLength: 1 },
   drop: { type: 'boolean', default: false },
   columns: {
     type: 'array',

@@ -2,7 +2,7 @@
 const { test } = require('tap');
 const { build } = require('../helper');
 
-test('Invalid methods', (t) => {
+test('Invalid methods', async (t) => {
   const routes = [
     '/import/schema',
     '/import/table',
@@ -28,23 +28,24 @@ test('Invalid methods', (t) => {
     });
   });
 
-  t.plan(2 * scenarios.length);
+  t.plan(scenarios.length);
   const app = build(t);
+  await app.ready();
 
-  scenarios.forEach((scenario) => {
-    app.inject({
+  const cases = await scenarios.map(async (scenario) => {
+    const res = await app.inject({
       method: scenario.method,
       url: scenario.route,
       // body: scenario.body
-    }, (err, res) => {
-      t.error(err);
-      t.deepEqual(JSON.parse(res.payload), scenario.expected);
     });
+    t.deepEqual(JSON.parse(res.payload), scenario.expected);
   });
-  app.close();
+
+  await Promise.all(cases);
+  t.end();
 });
 
-test('No data in body', (t) => {
+test('No data in body', async (t) => {
   const routes = [
     '/import/schema',
     '/import/table',
@@ -52,34 +53,34 @@ test('No data in body', (t) => {
     '/import/data',
   ];
 
-  t.plan(2 * routes.length);
+  t.plan(routes.length);
   const app = build(t);
+  await app.ready();
 
-  routes.forEach((route) => {
-    app.inject({
+  const cases = await routes.map(async (route) => {
+    const res = await app.inject({
       method: 'post',
       url: route,
       body: '',
-    }, (err, res) => {
-      t.error(err);
-      t.deepEqual(JSON.parse(res.payload), {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'body should be object',
-      });
+    });
+    t.deepEqual(JSON.parse(res.payload), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'body should be object',
     });
   });
-  app.close();
+  await Promise.all(cases);
+  t.end();
 });
 
-test('Invalid payload', (t) => {
+test('Invalid payload', async (t) => {
   const scenarios = [
     {
       message: 'Empty object in body',
       route: '/import/schema',
       body: {},
       expected: [
-        //"body should have required property 'object', "
+        // "body should have required property 'object', "
         "body should have required property 'names'",
       ],
     },
@@ -88,7 +89,7 @@ test('Invalid payload', (t) => {
       route: '/import/table',
       body: {},
       expected: [
-        //"body should have required property 'object'",
+        // "body should have required property 'object'",
         "body should have required property 'schema'",
         "body should have required property 'table'",
         "body should have required property 'columns'",
@@ -101,7 +102,7 @@ test('Invalid payload', (t) => {
       route: '/import/view',
       body: {},
       expected: [
-        //"body should have required property 'object'",
+        // "body should have required property 'object'",
         "body should have required property 'schema'",
         "body should have required property 'view'",
         "body should have required property 'code'",
@@ -113,7 +114,7 @@ test('Invalid payload', (t) => {
       route: '/import/data',
       body: {},
       expected: [
-        //"body should have required property 'object'",
+        // "body should have required property 'object'",
         "body should have required property 'schema'",
         "body should have required property 'table'",
         "body should have required property 'data'",
@@ -123,11 +124,11 @@ test('Invalid payload', (t) => {
       message: 'Invalid types for attributes',
       route: '/import/schema',
       body: {
-        //object: '',
+        // object: '',
         names: '',
       },
       expected: [
-        //'body.object should be equal to one of the allowed values',
+        // 'body.object should be equal to one of the allowed values',
         'body.names should be array',
       ],
     },
@@ -135,7 +136,7 @@ test('Invalid payload', (t) => {
       message: 'Invalid data in body',
       route: '/import/schema',
       body: {
-        //object: 'schema',
+        // object: 'schema',
         names: [],
       },
       expected: [
@@ -146,7 +147,7 @@ test('Invalid payload', (t) => {
       message: 'Invalid types for attributes',
       route: '/import/table',
       body: {
-        //object: '',
+        // object: '',
         schema: '',
         table: '',
         drop: null,
@@ -156,7 +157,7 @@ test('Invalid payload', (t) => {
         indexes: null,
       },
       expected: [
-        //'body.object should be equal to one of the allowed values',
+        // 'body.object should be equal to one of the allowed values',
         'body.schema should NOT be shorter than 1 characters',
         'body.table should NOT be shorter than 1 characters',
         'body.columns should be array',
@@ -169,7 +170,7 @@ test('Invalid payload', (t) => {
       message: 'Invalid types for attributes',
       route: '/import/table',
       body: {
-        //object: 'table',
+        // object: 'table',
         schema: 'sc',
         table: 'test',
         columns: [],
@@ -215,7 +216,7 @@ test('Invalid payload', (t) => {
       message: 'Incomplete payload',
       route: '/import/table',
       body: {
-        //object: 'table',
+        // object: 'table',
         schema: 'sc',
         table: 'test',
         columns: [{
@@ -253,7 +254,7 @@ test('Invalid payload', (t) => {
       message: 'Incomplete payload',
       route: '/import/table',
       body: {
-        //object: 'table',
+        // object: 'table',
         schema: 'kingdom',
         table: 'koala_bear',
         columns: [
@@ -299,14 +300,14 @@ test('Invalid payload', (t) => {
       name: 'Incomplete payload',
       route: '/import/view',
       body: {
-        //object: 'delete',
+        // object: 'delete',
         schema: '',
         view: '',
         code: '',
         drop: false,
       },
       expected: [
-        //'body.object should be equal to one of the allowed values',
+        // 'body.object should be equal to one of the allowed values',
         'body.code should NOT be shorter than 17 characters',
       ],
     },
@@ -314,13 +315,13 @@ test('Invalid payload', (t) => {
       name: 'Incorrect type',
       route: '/import/data',
       body: {
-        //object: '',
+        // object: '',
         schema: {},
         table: [],
         data: [],
       },
       expected: [
-        //'body.object should be equal to one of the allowed values',
+        // 'body.object should be equal to one of the allowed values',
         'body.schema should be string',
         'body.table should be string',
         'body.data should be object',
@@ -330,7 +331,7 @@ test('Invalid payload', (t) => {
       name: 'Invalid schema, table, data',
       route: '/import/data',
       body: {
-        //object: 'data',
+        // object: 'data',
         schema: 'schema Name',
         table: 'some table name',
         data: {},
@@ -360,33 +361,33 @@ test('Invalid payload', (t) => {
     // }
   ];
 
-  t.plan(2 * scenarios.length);
+  t.plan(scenarios.length);
   const app = build(t);
+  await app.ready();
 
-  scenarios.forEach((scenario) => {
-    app.inject({
+  const cases = await scenarios.map(async (scenario) => {
+    const res = await app.inject({
       method: 'post',
       url: scenario.route,
       body: scenario.body,
-    }, (err, res) => {
-      t.error(err);
-      t.deepEqual(JSON.parse(res.payload), {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: scenario.expected.join(', '),
-      });
+    });
+    t.deepEqual(JSON.parse(res.payload), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: scenario.expected.join(', '),
     });
   });
-  app.close();
+  await Promise.all(cases);
+  t.end();
 });
 
-test('Valid payload', (t) => {
+test('Valid payload', async (t) => {
   const scenarios = [
     {
       message: 'Valid payload',
       route: '/import/schema',
       body: {
-        //object: 'schema',
+        // object: 'schema',
         names: [
           'sc',
         ],
@@ -396,7 +397,7 @@ test('Valid payload', (t) => {
       message: 'Valid payload',
       route: '/import/table',
       body: {
-        //object: 'table',
+        // object: 'table',
         schema: 'animals',
         table: 'koala_bear',
         drop: false,
@@ -456,7 +457,7 @@ test('Valid payload', (t) => {
       message: 'Valid payload',
       route: '/import/view',
       body: {
-        //object: 'view',
+        // object: 'view',
         schema: 'animals',
         view: 'all_animals_vw',
         code: 'select * from tab;',
@@ -467,7 +468,7 @@ test('Valid payload', (t) => {
       message: 'Valid payload',
       route: '/import/data',
       body: {
-        //object: 'data',
+        // object: 'data',
         schema: 'schema_name',
         table: 'table_name',
         data: {
@@ -487,30 +488,30 @@ test('Valid payload', (t) => {
     'completedAt',
     'duration',
   ];
-  t.plan(7 * scenarios.length);
+  t.plan(6 * scenarios.length);
   const app = build(t);
-
-  scenarios.forEach((scenario) => {
+  await app.ready();
+  const cases = await scenarios.map(async (scenario) => {
     // let expected = scenario.body
     // if (scenario.route != "/import/data")
     //   expected.drop = true;
     // console.log(expected)
 
-    app.inject({
+    const res = await app.inject({
       method: 'post',
       url: scenario.route,
       body: scenario.body,
-    }, (err, res) => {
-      const payload = JSON.parse(res.payload);
-      t.error(err);
-      t.match(res.statusCode, 200);
-      t.match(res.headers['content-type'], 'application/json; charset=utf-8');
-      t.match(payload.message, 'task submitted');
-      keys.forEach((key) => {
-        t.ok(Object.keys(payload).includes(key));
-      });
-      // t.deepEqual(payload.data, expected)
     });
+    const payload = JSON.parse(res.payload);
+    t.match(res.statusCode, 200);
+    t.match(res.headers['content-type'], 'application/json; charset=utf-8');
+    t.match(payload.message, 'task submitted');
+    keys.forEach((key) => {
+      t.ok(Object.keys(payload).includes(key));
+    });
+    // t.deepEqual(payload.data, expected)
   });
-  app.close();
+
+  await Promise.all(cases);
+  t.end();
 });

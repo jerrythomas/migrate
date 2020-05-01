@@ -1,6 +1,5 @@
 async function exportData(fastify, job, done) {
-
-  done()
+  done();
 }
 
 module.exports = {

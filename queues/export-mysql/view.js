@@ -1,6 +1,5 @@
 async function exportView(fastify, job, done) {
-
-  done()
+  done();
 }
 
 module.exports = {

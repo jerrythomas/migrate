@@ -6,5 +6,5 @@ module.exports = {
     table: 2,
     data: 3,
     view: 4,
-  }
+  },
 };
