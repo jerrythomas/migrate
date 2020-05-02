@@ -8,11 +8,11 @@
   },
   "scripts": {
     "cover": "NODE_ENV=test nyc --exclude=zzz tap --no-coverage",
-    "test": "NODE_ENV=test tap --no-coverage",
+    "test": "standard && NODE_ENV=test tap --no-coverage",
     "start": "fastify start -l info app.js",
     "dev": "fastify start -w -l info -P app.js",
     "cluster": "node -r dotenv/config cluster.js",
-    "lint": "eslint --ext .js --fix ."
+    "lint": "standard --fix"
   },
   "tap": {
     "test-regex": ".*\\.(tests?|spec)\\.([mc]js|[jt]sx?)$",
@@ -50,11 +50,9 @@
   },
   "devDependencies": {
     "dotenv": "^8.2.0",
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.2",
     "ioredis": "^4.16.3",
     "rimraf": "^3.0.2",
+    "standard": "^14.3.3",
     "tap": "^14.10.7"
   }
 }

@@ -1,14 +1,14 @@
 
-const models = require('../models');
+const models = require('../models')
 
-function handleExport(fastify, request, reply) {
-  const initiatedAt = new Date();
+function handleExport (fastify, request, reply) {
+  const initiatedAt = new Date()
   const result = {
     statusCode: 200,
     message: 'task submitted',
     initiatedAt: initiatedAt.toISOString(),
-    data: request.body,
-  };
+    data: request.body
+  }
   // find the task name from request route
   // Submit processing task to queue
   // try {
@@ -22,11 +22,11 @@ function handleExport(fastify, request, reply) {
   //   result.data = request.body
   // }
 
-  const completedAt = new Date();
-  result.completedAt = completedAt.toISOString();
-  result.duration = (completedAt - initiatedAt) / 1000;
+  const completedAt = new Date()
+  result.completedAt = completedAt.toISOString()
+  result.duration = (completedAt - initiatedAt) / 1000
   reply.code(result.statusCode)
-    .send(result);
+    .send(result)
 }
 
 module.exports = (fastify, opts, next) => {
@@ -34,53 +34,53 @@ module.exports = (fastify, opts, next) => {
     '/export/schema',
     {
       schema: {
-        body: models.schema.exportSchema,
+        body: models.schema.exportSchema
       },
-      response: models.template.response,
+      response: models.template.response
     },
     (request, reply) => {
-      handleExport(fastify, request, reply);
-    },
-  );
+      handleExport(fastify, request, reply)
+    }
+  )
 
   fastify.post(
     '/export/table',
     {
       schema: {
-        body: models.table.exportSchema,
+        body: models.table.exportSchema
       },
-      response: models.template.response,
+      response: models.template.response
     },
     (request, reply) => {
-      handleExport(fastify, request, reply);
-    },
-  );
+      handleExport(fastify, request, reply)
+    }
+  )
 
   fastify.post(
     '/export/view',
     {
       schema: {
-        body: models.view.exportSchema,
+        body: models.view.exportSchema
       },
-      response: models.template.response,
+      response: models.template.response
     },
     (request, reply) => {
-      handleExport(fastify, request, reply);
-    },
-  );
+      handleExport(fastify, request, reply)
+    }
+  )
 
   fastify.post(
     '/export/data',
     {
       schema: {
-        body: models.data.exportSchema,
+        body: models.data.exportSchema
       },
-      response: models.template.response,
+      response: models.template.response
     },
     (request, reply) => {
-      handleExport(fastify, request, reply);
-    },
-  );
+      handleExport(fastify, request, reply)
+    }
+  )
 
-  next();
-};
+  next()
+}

@@ -5,6 +5,6 @@ module.exports = {
     schema: 1,
     table: 2,
     data: 3,
-    view: 4,
-  },
-};
+    view: 4
+  }
+}

@@ -1,44 +1,44 @@
-const { merge } = require('lodash');
-const fs = require('fs');
-const path = require('path');
-const { omitBy, isNil } = require('lodash');
-const models = require('../models');
+const { merge } = require('lodash')
+const fs = require('fs')
+const path = require('path')
+const { omitBy, isNil } = require('lodash')
+const models = require('../models')
 
-const ValidationError = require('./errors');
+const ValidationError = require('./errors')
 
-function toSnakeCase(input) {
-  let result = input;
+function toSnakeCase (input) {
+  let result = input
   if (result === result.toUpperCase()) {
-    result = result.toLowerCase();
+    result = result.toLowerCase()
   }
 
-  result = result.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g);
+  result = result.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
 
   if (result) {
     return result.map((x) => x.toLowerCase())
-      .join('_');
+      .join('_')
   }
-  return '';
+  return ''
 }
 
-function renameKeys(obj) {
+function renameKeys (obj) {
   return Object.keys(obj).reduce(
     (acc, key) => ({
       ...acc,
-      ...{ [toSnakeCase(key)]: obj[key] },
+      ...{ [toSnakeCase(key)]: obj[key] }
     }),
-    {},
-  );
+    {}
+  )
 }
 
-function getSchema(name, snakecase = false) {
-  const schema = models[name];
+function getSchema (name, snakecase = false) {
+  const schema = models[name]
 
   if (snakecase) {
-    schema.importSchema = merge(schema.importSchema, schema.forceSnakeCase);
+    schema.importSchema = merge(schema.importSchema, schema.forceSnakeCase)
   }
 
-  return schema;
+  return schema
 }
 
 /**
@@ -48,41 +48,41 @@ function getSchema(name, snakecase = false) {
  * @param {string or Array} include - regex pattern to be matched or an array of file extensions
  *        used for identifying which files are included in the scan. Default includes all files.
  */
-function cacheTree(dir = '.', include) {
-  let tree = {};
-  let pattern = '.+';
+function cacheTree (dir = '.', include) {
+  let tree = {}
+  let pattern = '.+'
 
   if (!fs.existsSync(dir)) {
-    throw new ValidationError('Specified path does not exist.', { dir, include });
+    throw new ValidationError('Specified path does not exist.', { dir, include })
   }
   if (!fs.statSync(dir).isDirectory()) {
-    throw new ValidationError('Specified path is not a directory.', { dir, include });
+    throw new ValidationError('Specified path is not a directory.', { dir, include })
   }
 
-  const files = fs.readdirSync(dir);
+  const files = fs.readdirSync(dir)
 
   if (Array.isArray(include)) {
-    pattern = `(${include.join('|')})$`;
+    pattern = `(${include.join('|')})$`
   } else if (typeof (include) === 'string') {
-    pattern = include;
+    pattern = include
   }
 
   files.forEach((filename) => {
-    const filepath = path.join(dir, filename);
+    const filepath = path.join(dir, filename)
 
-    const key = path.basename(filename, path.extname(filename));
+    const key = path.basename(filename, path.extname(filename))
     if (fs.statSync(filepath).isDirectory()) {
-      tree[key] = cacheTree(filepath, pattern);
+      tree[key] = cacheTree(filepath, pattern)
     } else if (path.extname(filename).match(pattern)) {
-      tree[key] = fs.readFileSync(filepath).toString('utf8'); // .push(filepath);
+      tree[key] = fs.readFileSync(filepath).toString('utf8') // .push(filepath);
     }
-  });
-  tree = omitBy(tree, isNil);
-  return (Object.keys(tree).length === 0) ? null : tree;
+  })
+  tree = omitBy(tree, isNil)
+  return (Object.keys(tree).length === 0) ? null : tree
 }
 module.exports = {
   toSnakeCase,
   renameKeys,
   getSchema,
-  cacheTree,
-};
+  cacheTree
+}

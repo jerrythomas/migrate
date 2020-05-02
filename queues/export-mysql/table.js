@@ -1,9 +1,9 @@
 // const jq = require('node-jq');
-const { pick } = require('lodash');
-const jq = require('node-jq');
-const { table } = require('../../models');
-const messages = require('../../common/messages');
-const ValidationError = require('../../common/errors');
+const { pick } = require('lodash')
+const jq = require('node-jq')
+const { table } = require('../../models')
+const messages = require('../../common/messages')
+const ValidationError = require('../../common/errors')
 // const messages = {
 //   UNEXPECTED_FORMAT: 'Input data does not match expected format.'
 // }
@@ -25,57 +25,57 @@ const ValidationError = require('../../common/errors');
 //   // })
 // }
 
-async function exportTable(fastify, job) { // }, done) {
-  const { database } = fastify.mapping.source;
-  const db = fastify[database].source;
-  const queries = fastify.scripts.sql[database];
+async function exportTable (fastify, job) { // }, done) {
+  const { database } = fastify.mapping.source
+  const db = fastify[database].source
+  const queries = fastify.scripts.sql[database]
 
-  const jobs = [];
-  const errors = fastify.validateSchema(table.exportSchema, job.data);
+  const jobs = []
+  const errors = fastify.validateSchema(table.exportSchema, job.data)
 
   // try {
   if (errors.length > 0) {
-    throw new ValidationError(messages.UNEXPECTED_FORMAT, { errors });
+    throw new ValidationError(messages.UNEXPECTED_FORMAT, { errors })
   }
 
-  const opts = { priority: job.opts.priority };
-  const [columns] = await db.query(queries.columns, [job.data.schema, job.data.table]);
-  const [key] = await db.query(queries.key, [job.data.schema, job.data.table]);
-  const [indexes] = await db.query(queries.indexes, [job.data.schema, job.data.table]);
-  let result = { columns, key, indexes };
+  const opts = { priority: job.opts.priority }
+  const [columns] = await db.query(queries.columns, [job.data.schema, job.data.table])
+  const [key] = await db.query(queries.key, [job.data.schema, job.data.table])
+  const [indexes] = await db.query(queries.indexes, [job.data.schema, job.data.table])
+  let result = { columns, key, indexes }
 
   // clean up key names
   result = await jq.run(fastify.scripts.jq.table,
     JSON.stringify(result),
-    { input: 'string', output: 'json' });
+    { input: 'string', output: 'json' })
 
   let submitted = await fastify.queues[fastify.mapping.importQueue]
-    .add('table', result, opts);
+    .add('table', result, opts)
 
   // console.log(submitted)
   if (process.env.NODE_ENV === 'test') {
-    jobs.push(pick(submitted, ['name', 'data', 'opts.priority', 'queue.name']));
+    jobs.push(pick(submitted, ['name', 'data', 'opts.priority', 'queue.name']))
   }
 
-  opts.priority += 1;
+  opts.priority += 1
   submitted = await fastify.queues[fastify.mapping.exportQueue]
-    .add('data', job.data, opts);
+    .add('data', job.data, opts)
   if (process.env.NODE_ENV === 'test') {
-    jobs.push(pick(submitted, ['name', 'data', 'opts.priority', 'queue.name']));
+    jobs.push(pick(submitted, ['name', 'data', 'opts.priority', 'queue.name']))
   }
 
-  opts.priority += 1;
+  opts.priority += 1
   submitted = await fastify.queues[fastify.mapping.exportQueue]
-    .add('references', job.data, opts);
+    .add('references', job.data, opts)
   if (process.env.NODE_ENV === 'test') {
-    jobs.push(pick(submitted, ['name', 'data', 'opts.priority', 'queue.name']));
+    jobs.push(pick(submitted, ['name', 'data', 'opts.priority', 'queue.name']))
   }
 
-  return { status: 'ok', jobs, warnings: errors };
+  return { status: 'ok', jobs, warnings: errors }
 }
 
 module.exports = {
   queue: 'export-mysql',
   task: 'table',
-  handler: exportTable,
-};
+  handler: exportTable
+}

@@ -1,4 +1,4 @@
-const constants = require('./constants');
+const constants = require('./constants')
 
 // function validateNotEmpty(schema, value) {
 //   if (typeof (value) === 'string') {
@@ -16,19 +16,19 @@ const constants = require('./constants');
 
 // Looks like the validator is not called when the type is not string
 // probably because types are converted
-function validateSnakeCase(schema, value) {
+function validateSnakeCase (schema, value) {
   validateSnakeCase.errors = [
     {
       keyword: 'snakecase',
       params: { keyword: 'snakecase' },
-      message: 'should be in snakecase',
-    },
-  ];
-  const re = new RegExp(constants.SNAKE_CASE_PATTERN);
-  return re.test(value);
+      message: 'should be in snakecase'
+    }
+  ]
+  const re = new RegExp(constants.SNAKE_CASE_PATTERN)
+  return re.test(value)
 }
 
 module.exports = {
-  snakecase: validateSnakeCase,
+  snakecase: validateSnakeCase
   // notempty: validateNotEmpty,
-};
+}

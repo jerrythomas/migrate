@@ -2,11 +2,11 @@
 // todo: implement login and auth
 module.exports = (fastify, opts, next) => {
   fastify.get('/', (request, reply) => {
-    reply.send({ root: true });
-  });
+    reply.send({ root: true })
+  })
 
-  next();
-};
+  next()
+}
 
 // If you prefer async/await, use the following
 //

@@ -5,48 +5,48 @@ const responseProperties = {
   initiatedAt: { type: 'string' },
   completedAt: { type: 'string' },
   duration: { type: 'number' },
-  error: { type: 'string' },
-};
+  error: { type: 'string' }
+}
 
 const error = {
   type: 'object',
   properties: responseProperties,
-  required: ['statusCode', 'message', 'initiatedAt', 'completedAt', 'duration', 'error'],
-};
+  required: ['statusCode', 'message', 'initiatedAt', 'completedAt', 'duration', 'error']
+}
 
 const success = {
   type: 'object',
   properties: responseProperties,
-  required: ['statusCode', 'message', 'initiatedAt', 'completedAt', 'duration'],
-};
+  required: ['statusCode', 'message', 'initiatedAt', 'completedAt', 'duration']
+}
 
 const databaseProperties = {
   type: 'object',
   properties: {
     database: { type: 'string' },
-    url: { type: 'string' },
+    url: { type: 'string' }
   },
-  required: ['database', 'url'],
-};
+  required: ['database', 'url']
+}
 const mappingSchema = {
   type: 'object',
   properties: {
     source: databaseProperties,
-    target: databaseProperties,
+    target: databaseProperties
   },
-  required: ['source', 'target'],
-};
+  required: ['source', 'target']
+}
 
 const response = {
   200: success,
-  400: error,
-};
+  400: error
+}
 
 const template = {
   error,
   success,
   response,
-  mappingSchema,
-};
+  mappingSchema
+}
 
-module.exports = template;
+module.exports = template

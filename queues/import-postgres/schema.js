@@ -1,9 +1,9 @@
-async function importSchemas(fastify, job, done) {
-  done();
+async function importSchemas (fastify, job, done) {
+  done()
 }
 
 module.exports = {
   queue: 'import-postgres',
   task: 'schema',
-  handler: importSchemas,
-};
+  handler: importSchemas
+}

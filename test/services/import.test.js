@@ -1,17 +1,17 @@
 // const tap = require("tap")
-const { test } = require('tap');
-const { build } = require('../helper');
+const { test } = require('tap')
+const { build } = require('../helper')
 
 test('Invalid methods', async (t) => {
   const routes = [
     '/import/schema',
     '/import/table',
     '/import/view',
-    '/import/data',
-  ];
-  const methods = ['get', 'put', 'delete', 'head'];
+    '/import/data'
+  ]
+  const methods = ['get', 'put', 'delete', 'head']
 
-  const scenarios = [];
+  const scenarios = []
 
   routes.forEach((route) => {
     methods.forEach((method) => {
@@ -22,56 +22,56 @@ test('Invalid methods', async (t) => {
         expected: {
           message: `Route GET:${route} not found`,
           error: 'Not Found',
-          statusCode: 404,
-        },
-      });
-    });
-  });
+          statusCode: 404
+        }
+      })
+    })
+  })
 
-  t.plan(scenarios.length);
-  const app = build(t);
-  await app.ready();
+  t.plan(scenarios.length)
+  const app = build(t)
+  await app.ready()
 
   const cases = await scenarios.map(async (scenario) => {
     const res = await app.inject({
       method: scenario.method,
-      url: scenario.route,
+      url: scenario.route
       // body: scenario.body
-    });
-    t.deepEqual(JSON.parse(res.payload), scenario.expected);
-  });
+    })
+    t.deepEqual(JSON.parse(res.payload), scenario.expected)
+  })
 
-  await Promise.all(cases);
-  t.end();
-});
+  await Promise.all(cases)
+  t.end()
+})
 
 test('No data in body', async (t) => {
   const routes = [
     '/import/schema',
     '/import/table',
     '/import/view',
-    '/import/data',
-  ];
+    '/import/data'
+  ]
 
-  t.plan(routes.length);
-  const app = build(t);
-  await app.ready();
+  t.plan(routes.length)
+  const app = build(t)
+  await app.ready()
 
   const cases = await routes.map(async (route) => {
     const res = await app.inject({
       method: 'post',
       url: route,
-      body: '',
-    });
+      body: ''
+    })
     t.deepEqual(JSON.parse(res.payload), {
       statusCode: 400,
       error: 'Bad Request',
-      message: 'body should be object',
-    });
-  });
-  await Promise.all(cases);
-  t.end();
-});
+      message: 'body should be object'
+    })
+  })
+  await Promise.all(cases)
+  t.end()
+})
 
 test('Invalid payload', async (t) => {
   const scenarios = [
@@ -81,8 +81,8 @@ test('Invalid payload', async (t) => {
       body: {},
       expected: [
         // "body should have required property 'object', "
-        "body should have required property 'names'",
-      ],
+        "body should have required property 'names'"
+      ]
     },
     {
       message: 'Empty data in body',
@@ -94,8 +94,8 @@ test('Invalid payload', async (t) => {
         "body should have required property 'table'",
         "body should have required property 'columns'",
         "body should have required property 'references'",
-        "body should have required property 'indexes'",
-      ],
+        "body should have required property 'indexes'"
+      ]
     },
     {
       message: 'Empty data in body',
@@ -106,8 +106,8 @@ test('Invalid payload', async (t) => {
         "body should have required property 'schema'",
         "body should have required property 'view'",
         "body should have required property 'code'",
-        "body should have required property 'drop'",
-      ],
+        "body should have required property 'drop'"
+      ]
     },
     {
       message: 'Empty data in body',
@@ -117,31 +117,31 @@ test('Invalid payload', async (t) => {
         // "body should have required property 'object'",
         "body should have required property 'schema'",
         "body should have required property 'table'",
-        "body should have required property 'data'",
-      ],
+        "body should have required property 'data'"
+      ]
     },
     {
       message: 'Invalid types for attributes',
       route: '/import/schema',
       body: {
         // object: '',
-        names: '',
+        names: ''
       },
       expected: [
         // 'body.object should be equal to one of the allowed values',
-        'body.names should be array',
-      ],
+        'body.names should be array'
+      ]
     },
     {
       message: 'Invalid data in body',
       route: '/import/schema',
       body: {
         // object: 'schema',
-        names: [],
+        names: []
       },
       expected: [
-        'body.names should NOT have fewer than 1 items',
-      ],
+        'body.names should NOT have fewer than 1 items'
+      ]
     },
     {
       message: 'Invalid types for attributes',
@@ -154,7 +154,7 @@ test('Invalid payload', async (t) => {
         columns: null,
         references: null,
         key: null,
-        indexes: null,
+        indexes: null
       },
       expected: [
         // 'body.object should be equal to one of the allowed values',
@@ -163,8 +163,8 @@ test('Invalid payload', async (t) => {
         'body.columns should be array',
         'body.references should be array',
         'body.key should be object',
-        'body.indexes should be array',
-      ],
+        'body.indexes should be array'
+      ]
     },
     {
       message: 'Invalid types for attributes',
@@ -176,12 +176,12 @@ test('Invalid payload', async (t) => {
         columns: [],
         references: [],
         key: {},
-        indexes: [],
+        indexes: []
       },
       expected: [
         'body.columns should NOT have fewer than 1 items',
-        "body.key should have required property 'columns'",
-      ],
+        "body.key should have required property 'columns'"
+      ]
     },
     {
       message: 'Incomplete payload',
@@ -193,9 +193,9 @@ test('Invalid payload', async (t) => {
         columns: [{}],
         references: [{}],
         key: {
-          columns: [],
+          columns: []
         },
-        indexes: [{}],
+        indexes: [{}]
       },
       expected: [
         "body.columns[0] should have required property 'name'",
@@ -209,8 +209,8 @@ test('Invalid payload', async (t) => {
         "body.references[0] should have required property 'refers'",
         'body.key.columns should NOT have fewer than 1 items',
         "body.indexes[0] should have required property 'name'",
-        "body.indexes[0] should have required property 'columns'",
-      ],
+        "body.indexes[0] should have required property 'columns'"
+      ]
     },
     {
       message: 'Incomplete payload',
@@ -227,19 +227,19 @@ test('Invalid payload', async (t) => {
           scale: null,
           default: null,
           position: null,
-          is_nullable: '',
+          is_nullable: ''
         }],
         references: [{
           name: '',
-          refers: {},
+          refers: {}
         }],
         key: {
-          columns: ['id'],
+          columns: ['id']
         },
         indexes: [{
           name: '',
-          columns: [],
-        }],
+          columns: []
+        }]
       },
       expected: [
         'body.columns[0].position should be >= 1',
@@ -247,8 +247,8 @@ test('Invalid payload', async (t) => {
         "body.references[0].refers should have required property 'schema'",
         "body.references[0].refers should have required property 'table'",
         "body.references[0].refers should have required property 'columns'",
-        'body.indexes[0].columns should NOT have fewer than 1 items',
-      ],
+        'body.indexes[0].columns should NOT have fewer than 1 items'
+      ]
     },
     {
       message: 'Incomplete payload',
@@ -265,8 +265,8 @@ test('Invalid payload', async (t) => {
             scale: -1,
             default: -1,
             position: -1,
-            is_nullable: false,
-          },
+            is_nullable: false
+          }
         ],
         references: [
           {
@@ -274,27 +274,27 @@ test('Invalid payload', async (t) => {
             refers: {
               schema: '',
               table: '',
-              columns: [],
-            },
-          },
+              columns: []
+            }
+          }
         ],
         key: {
-          columns: ['Key Space'],
+          columns: ['Key Space']
         },
         indexes: [
           {
             name: '',
-            columns: [],
-          },
-        ],
+            columns: []
+          }
+        ]
       },
       expected: [
         'body.columns[0].precision should be >= 1',
         'body.columns[0].scale should be >= 1',
         'body.columns[0].position should be >= 1',
         'body.references[0].refers.columns should NOT have fewer than 1 items',
-        'body.indexes[0].columns should NOT have fewer than 1 items',
-      ],
+        'body.indexes[0].columns should NOT have fewer than 1 items'
+      ]
     },
     {
       name: 'Incomplete payload',
@@ -304,12 +304,12 @@ test('Invalid payload', async (t) => {
         schema: '',
         view: '',
         code: '',
-        drop: false,
+        drop: false
       },
       expected: [
         // 'body.object should be equal to one of the allowed values',
-        'body.code should NOT be shorter than 17 characters',
-      ],
+        'body.code should NOT be shorter than 17 characters'
+      ]
     },
     {
       name: 'Incorrect type',
@@ -318,14 +318,14 @@ test('Invalid payload', async (t) => {
         // object: '',
         schema: {},
         table: [],
-        data: [],
+        data: []
       },
       expected: [
         // 'body.object should be equal to one of the allowed values',
         'body.schema should be string',
         'body.table should be string',
-        'body.data should be object',
-      ],
+        'body.data should be object'
+      ]
     },
     {
       name: 'Invalid schema, table, data',
@@ -334,14 +334,14 @@ test('Invalid payload', async (t) => {
         // object: 'data',
         schema: 'schema Name',
         table: 'some table name',
-        data: {},
+        data: {}
       },
       expected: [
-        'body.data should NOT have fewer than 1 properties',
+        'body.data should NOT have fewer than 1 properties'
         // `body.schema should match pattern "${constants.SNAKE_CASE_PATTERN}"`,
         // `body.table should match pattern "${constants.SNAKE_CASE_PATTERN}"`
-      ],
-    },
+      ]
+    }
     // {
     //   name: "Invalid column names",
     //   route: "/import/data",
@@ -359,27 +359,27 @@ test('Invalid payload', async (t) => {
     //     "\"CamelCol\" is not in snakecase"
     //   ]
     // }
-  ];
+  ]
 
-  t.plan(scenarios.length);
-  const app = build(t);
-  await app.ready();
+  t.plan(scenarios.length)
+  const app = build(t)
+  await app.ready()
 
   const cases = await scenarios.map(async (scenario) => {
     const res = await app.inject({
       method: 'post',
       url: scenario.route,
-      body: scenario.body,
-    });
+      body: scenario.body
+    })
     t.deepEqual(JSON.parse(res.payload), {
       statusCode: 400,
       error: 'Bad Request',
-      message: scenario.expected.join(', '),
-    });
-  });
-  await Promise.all(cases);
-  t.end();
-});
+      message: scenario.expected.join(', ')
+    })
+  })
+  await Promise.all(cases)
+  t.end()
+})
 
 test('Valid payload', async (t) => {
   const scenarios = [
@@ -389,9 +389,9 @@ test('Valid payload', async (t) => {
       body: {
         // object: 'schema',
         names: [
-          'sc',
-        ],
-      },
+          'sc'
+        ]
+      }
     },
     {
       message: 'Valid payload',
@@ -409,7 +409,7 @@ test('Valid payload', async (t) => {
             scale: null,
             default: null,
             position: 1,
-            is_nullable: false,
+            is_nullable: false
           },
           {
             name: 'kingdom_id',
@@ -418,7 +418,7 @@ test('Valid payload', async (t) => {
             scale: null,
             default: null,
             position: 1,
-            is_nullable: false,
+            is_nullable: false
           },
           {
             name: 'name',
@@ -427,8 +427,8 @@ test('Valid payload', async (t) => {
             scale: 2,
             default: null,
             position: 1,
-            is_nullable: false,
-          },
+            is_nullable: false
+          }
         ],
         references: [
           {
@@ -436,22 +436,22 @@ test('Valid payload', async (t) => {
             refers: {
               schema: 'animals',
               table: 'kingdom',
-              columns: ['id'],
-            },
-          },
+              columns: ['id']
+            }
+          }
         ],
         key: {
-          columns: ['id'],
+          columns: ['id']
         },
         indexes: [
           {
             name: 'animals_uk',
             columns: [
-              'name',
-            ],
-          },
-        ],
-      },
+              'name'
+            ]
+          }
+        ]
+      }
     },
     {
       message: 'Valid payload',
@@ -461,8 +461,8 @@ test('Valid payload', async (t) => {
         schema: 'animals',
         view: 'all_animals_vw',
         code: 'select * from tab;',
-        drop: false,
-      },
+        drop: false
+      }
     },
     {
       message: 'Valid payload',
@@ -478,19 +478,19 @@ test('Valid payload', async (t) => {
           integer_col: 1,
           numeric_col: 3.14,
           array_col: [],
-          bool_col: true,
-        },
-      },
-    },
-  ];
+          bool_col: true
+        }
+      }
+    }
+  ]
   const keys = [
     'initiatedAt',
     'completedAt',
-    'duration',
-  ];
-  t.plan(6 * scenarios.length);
-  const app = build(t);
-  await app.ready();
+    'duration'
+  ]
+  t.plan(6 * scenarios.length)
+  const app = build(t)
+  await app.ready()
   const cases = await scenarios.map(async (scenario) => {
     // let expected = scenario.body
     // if (scenario.route != "/import/data")
@@ -500,18 +500,18 @@ test('Valid payload', async (t) => {
     const res = await app.inject({
       method: 'post',
       url: scenario.route,
-      body: scenario.body,
-    });
-    const payload = JSON.parse(res.payload);
-    t.match(res.statusCode, 200);
-    t.match(res.headers['content-type'], 'application/json; charset=utf-8');
-    t.match(payload.message, 'task submitted');
+      body: scenario.body
+    })
+    const payload = JSON.parse(res.payload)
+    t.match(res.statusCode, 200)
+    t.match(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.match(payload.message, 'task submitted')
     keys.forEach((key) => {
-      t.ok(Object.keys(payload).includes(key));
-    });
+      t.ok(Object.keys(payload).includes(key))
+    })
     // t.deepEqual(payload.data, expected)
-  });
+  })
 
-  await Promise.all(cases);
-  t.end();
-});
+  await Promise.all(cases)
+  t.end()
+})

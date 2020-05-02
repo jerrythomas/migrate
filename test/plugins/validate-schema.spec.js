@@ -1,7 +1,7 @@
-const { test } = require('tap');
-const messages = require('../../common/messages');
-const { getSchema } = require('../../common/functions');
-const { build } = require('../helper');
+const { test } = require('tap')
+const messages = require('../../common/messages')
+const { getSchema } = require('../../common/functions')
+const { build } = require('../helper')
 
 test('Snake case validations', (t) => {
   const scenarios = [
@@ -9,15 +9,15 @@ test('Snake case validations', (t) => {
       message: 'Undefined schema',
       errors: [
         messages.SCHEMA_IS_NULL,
-        messages.DATA_IS_NULL,
-      ],
+        messages.DATA_IS_NULL
+      ]
     },
     {
       message: 'Undefined body',
       schema: {},
       errors: [
-        messages.DATA_IS_NULL,
-      ],
+        messages.DATA_IS_NULL
+      ]
     },
     {
       message: 'Undefined body',
@@ -26,16 +26,16 @@ test('Snake case validations', (t) => {
         properties: {
           value: {
             type: 'string',
-            enum: ['correct'],
-          },
-        },
+            enum: ['correct']
+          }
+        }
       },
       body: {
-        value: 'xyz',
+        value: 'xyz'
       },
       errors: [
-        '.value should be equal to one of the allowed values [correct]',
-      ],
+        '.value should be equal to one of the allowed values [correct]'
+      ]
     },
     {
       message: 'Undefined body',
@@ -44,14 +44,14 @@ test('Snake case validations', (t) => {
         properties: {
           value: {
             type: 'string',
-            enum: ['correct'],
-          },
-        },
+            enum: ['correct']
+          }
+        }
       },
       body: {
-        value: 'correct',
+        value: 'correct'
       },
-      errors: [],
+      errors: []
     },
     {
       message: 'Schema names should be in snake case',
@@ -68,8 +68,8 @@ test('Snake case validations', (t) => {
           true,
           [],
           '123_not_snake',
-          'snake_case_123',
-        ],
+          'snake_case_123'
+        ]
       },
       errors: [
         '.names[0] should be in snakecase',
@@ -81,8 +81,8 @@ test('Snake case validations', (t) => {
         '.names[5] should be in snakecase',
         '.names[7] should be string',
         '.names[7] should be in snakecase',
-        '.names[8] should be in snakecase',
-      ],
+        '.names[8] should be in snakecase'
+      ]
     },
     {
       message: 'Table attributes should be in snake case',
@@ -100,7 +100,7 @@ test('Snake case validations', (t) => {
             default: null,
             scale: null,
             position: 1,
-            is_nullable: false,
+            is_nullable: false
           },
           {
             name: 'UPPER_CASE',
@@ -110,7 +110,7 @@ test('Snake case validations', (t) => {
             scale: null,
             default: null,
             position: 1,
-            is_nullable: false,
+            is_nullable: false
           },
           {
             name: 'CamelCase',
@@ -120,7 +120,7 @@ test('Snake case validations', (t) => {
             scale: null,
             default: null,
             position: 1,
-            is_nullable: false,
+            is_nullable: false
           },
           {
             name: 'symbols-not-#@$%^&*()!~',
@@ -130,7 +130,7 @@ test('Snake case validations', (t) => {
             scale: null,
             default: null,
             position: 1,
-            is_nullable: false,
+            is_nullable: false
           },
           {
             name: '123_not_snake',
@@ -140,7 +140,7 @@ test('Snake case validations', (t) => {
             scale: null,
             default: null,
             position: 1,
-            is_nullable: false,
+            is_nullable: false
           },
           {
             name: 'snake_case_123',
@@ -150,8 +150,8 @@ test('Snake case validations', (t) => {
             scale: null,
             default: null,
             position: 1,
-            is_nullable: false,
-          },
+            is_nullable: false
+          }
         ],
         references: [{
           name: '',
@@ -164,9 +164,9 @@ test('Snake case validations', (t) => {
               'CamelCase',
               'symbols-not-#@$%^&*()!~',
               '123_not_snake',
-              'snake_case_123',
-            ],
-          },
+              'snake_case_123'
+            ]
+          }
         }],
         key: {
           columns: [
@@ -175,8 +175,8 @@ test('Snake case validations', (t) => {
             'CamelCase',
             'symbols-not-#@$%^&*()!~',
             '123_not_snake',
-            'snake_case_123',
-          ],
+            'snake_case_123'
+          ]
         },
         indexes: [{
           name: 'a b',
@@ -186,9 +186,9 @@ test('Snake case validations', (t) => {
             'CamelCase',
             'symbols-not-#@$%^&*()!~',
             '123_not_snake',
-            'snake_case_123',
-          ],
-        }],
+            'snake_case_123'
+          ]
+        }]
       },
       errors: [
         '.schema should be in snakecase',
@@ -209,8 +209,8 @@ test('Snake case validations', (t) => {
         '.indexes[0].columns[1] should be in snakecase',
         '.indexes[0].columns[2] should be in snakecase',
         '.indexes[0].columns[3] should be in snakecase',
-        '.indexes[0].columns[4] should be in snakecase',
-      ],
+        '.indexes[0].columns[4] should be in snakecase'
+      ]
     },
     {
       name: 'View attributes should be in snakecase',
@@ -219,13 +219,13 @@ test('Snake case validations', (t) => {
         object: 'view',
         schema: 'invalid schema',
         view: '  ',
-        code: 'create view b as select * from a;',
+        code: 'create view b as select * from a;'
       },
       errors: [
         '.schema should be in snakecase',
         '.view should be in snakecase',
-        " should have required property 'drop'",
-      ],
+        " should have required property 'drop'"
+      ]
     },
     {
       name: 'Invalid column names',
@@ -236,39 +236,39 @@ test('Snake case validations', (t) => {
         table: 'table name',
         data: {
           'column Name -': 'x',
-          CamelCol: 'y',
-        },
+          CamelCol: 'y'
+        }
       },
       expected: {
         object: 'data',
         schema: 'schema name',
         table: 'table name',
-        data: {},
+        data: {}
       },
       errors: [
         '.schema should be in snakecase',
-        '.table should be in snakecase',
-      ],
-    },
-  ];
-  t.plan(scenarios.length + 2);
-  const app = build(t);
+        '.table should be in snakecase'
+      ]
+    }
+  ]
+  t.plan(scenarios.length + 2)
+  const app = build(t)
 
   app.ready((err) => {
-    t.error(err);
+    t.error(err)
     scenarios.forEach((scenario) => {
-      let errors = [];
+      let errors = []
       try {
         // const expected = scenario.expected || scenario.body;
-        errors = app.validateSchema(scenario.schema, scenario.body);
+        errors = app.validateSchema(scenario.schema, scenario.body)
         if (scenario.expected) {
-          t.same(scenario.body, scenario.expected);
+          t.same(scenario.body, scenario.expected)
         }
-        t.same(errors, scenario.errors, scenario.message);
+        t.same(errors, scenario.errors, scenario.message)
       } catch (e) {
-        t.error(e);
+        t.error(e)
       }
-    });
-    app.close();
-  });
-});
+    })
+    app.close()
+  })
+})

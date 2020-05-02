@@ -1,4 +1,4 @@
-const snakecase = require('./snakecase');
+const snakecase = require('./snakecase')
 
 const columnProperties = {
   name: { type: 'string' },
@@ -11,8 +11,8 @@ const columnProperties = {
   key: { type: 'string' },
   comment: { type: 'string' },
   extra: { type: 'string' },
-  generation_expression: { type: 'string' },
-};
+  generation_expression: { type: 'string' }
+}
 
 const foreignKeyProperties = {
   name: { type: 'string' },
@@ -21,11 +21,11 @@ const foreignKeyProperties = {
     properties: {
       schema: { type: 'string' },
       table: { type: 'string' },
-      columns: { type: 'array', minItems: 1, items: { type: 'string' } },
+      columns: { type: 'array', minItems: 1, items: { type: 'string' } }
     },
-    required: ['schema', 'table', 'columns'],
-  },
-};
+    required: ['schema', 'table', 'columns']
+  }
+}
 
 const indexProperties = {
   name: { type: 'string' },
@@ -33,9 +33,9 @@ const indexProperties = {
   columns: {
     type: 'array',
     minItems: 1,
-    items: { type: 'string' },
-  },
-};
+    items: { type: 'string' }
+  }
+}
 
 const tableProperties = {
   // object: { type: 'string', enum: ['table'] },
@@ -48,75 +48,75 @@ const tableProperties = {
     items: {
       type: 'object',
       properties: columnProperties,
-      required: ['name', 'data_type', 'precision', 'scale', 'default', 'is_nullable', 'position'],
-    },
+      required: ['name', 'data_type', 'precision', 'scale', 'default', 'is_nullable', 'position']
+    }
   },
   references: {
     type: 'array',
     items: {
       type: 'object',
       properties: foreignKeyProperties,
-      required: ['name', 'refers'],
-    },
+      required: ['name', 'refers']
+    }
   },
   key: {
     type: 'object',
     properties: indexProperties,
-    required: ['columns'],
+    required: ['columns']
   },
   indexes: {
     type: 'array',
     items: {
       type: 'object',
       properties: indexProperties,
-      required: ['name', 'columns', 'uniqueness'],
-    },
-  },
-};
+      required: ['name', 'columns', 'uniqueness']
+    }
+  }
+}
 
 const exportSchema = {
   type: 'object',
   properties: tableProperties,
-  required: ['schema', 'table'],
-};
+  required: ['schema', 'table']
+}
 
 const importSchema = {
   type: 'object',
   properties: tableProperties,
-  required: ['schema', 'table', 'columns', 'references', 'indexes'],
-};
+  required: ['schema', 'table', 'columns', 'references', 'indexes']
+}
 
 const snakeCaseIndexProperties = {
   name: snakecase.pattern,
   columns: {
-    items: snakecase.pattern,
-  },
-};
+    items: snakecase.pattern
+  }
+}
 const forceSnakeCase = {
   properties: {
     schema: snakecase.pattern,
     table: snakecase.pattern,
     columns: {
       items: {
-        properties: snakeCaseIndexProperties,
-      },
+        properties: snakeCaseIndexProperties
+      }
     },
     key: {
-      properties: snakeCaseIndexProperties,
+      properties: snakeCaseIndexProperties
     },
     indexes: {
       items: {
-        properties: snakeCaseIndexProperties,
-      },
+        properties: snakeCaseIndexProperties
+      }
     },
     references: {
       items: {
-        properties: snakeCaseIndexProperties,
-      },
-    },
+        properties: snakeCaseIndexProperties
+      }
+    }
 
-  },
-};
+  }
+}
 const schema = {
   forceSnakeCase,
   tableProperties,
@@ -124,7 +124,7 @@ const schema = {
   indexProperties,
   foreignKeyProperties,
   importSchema,
-  exportSchema,
-};
+  exportSchema
+}
 
-module.exports = schema;
+module.exports = schema

@@ -1,4 +1,4 @@
-const snakecase = require('./snakecase');
+const snakecase = require('./snakecase')
 
 const dataProperties = {
   // object: {
@@ -6,41 +6,41 @@ const dataProperties = {
   //   enum: ['data'],
   // },
   schema: {
-    type: 'string',
+    type: 'string'
   },
   table: {
-    type: 'string',
+    type: 'string'
   },
   data: {
     type: 'object',
     minProperties: 1,
-    uniqueProperties: true,
-  },
-};
+    uniqueProperties: true
+  }
+}
 
 const exportSchema = {
   type: 'object',
   properties: dataProperties,
-  required: ['schema', 'table'],
-};
+  required: ['schema', 'table']
+}
 
 const importSchema = {
   type: 'object',
   properties: dataProperties,
-  required: ['schema', 'table', 'data'],
-};
+  required: ['schema', 'table', 'data']
+}
 
 const forceSnakeCase = {
   properties: {
     schema: snakecase.pattern,
     table: snakecase.pattern,
-    data: snakecase.properties,
-  },
-};
+    data: snakecase.properties
+  }
+}
 
 module.exports = {
   forceSnakeCase,
   dataProperties,
   exportSchema,
-  importSchema,
-};
+  importSchema
+}
