@@ -8,7 +8,7 @@ node_js:
 services:
   - postgresql
   - mysql
-  - redis
+  - redis-server
 
 sudo: true
 
