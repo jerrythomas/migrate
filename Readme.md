@@ -1,3 +1,8 @@
+https://travis-ci.org/jerrythomas/migrate.svg?branch=master
+[![Coverage Status](https://coveralls.io/repos/github/jerrythomas/migrate/badge.svg)](https://coveralls.io/github/jerrythomas/migrate)
+![David](https://img.shields.io/david/jerrythomas/migrate)
+[![Known Vulnerabilities](https://snyk.io/test/github/jerrythomas/migrate/badge.svg)](https://snyk.io/test/github/jerrythomas/migrate)
+
 # Migrate database
 
 Migrating from one database to another is a difficult task. This reposiitory is an experimental implementation that attempts to do this using a combination of [fastify](https://www.fastify.io/) & [bull](https://optimalbits.github.io/bull/).
