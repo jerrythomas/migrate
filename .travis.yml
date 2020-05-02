@@ -4,8 +4,6 @@ dist: xenial
 
 node_js:
   - "13"
-  - "12"
-  - "10"
 
 services:
   - postgresql
@@ -14,6 +12,8 @@ services:
 
 sudo: true
 
+before_install:
+  - mysql -u root < test/setup.sql
 
 notifications:
   email:
