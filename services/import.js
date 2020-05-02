@@ -1,7 +1,7 @@
 const models = require('../models')
 const { priorities } = require('../common/constants')
 
-function handleExport (fastify, request, reply) {
+function handleImport (fastify, request, reply) {
   const initiatedAt = new Date()
   const result = {
     statusCode: 200,
@@ -21,57 +21,17 @@ function handleExport (fastify, request, reply) {
 }
 
 module.exports = (fastify, opts, next) => {
-  fastify.post(
-    '/import/schema',
-    {
-      schema: {
-        body: models.schema.importSchema
-      },
-      response: models.template.response
-    },
-    (request, reply) => {
-      handleExport(fastify, request, reply)
-    }
-  )
+  const routes = ['schema', 'table', 'view', 'data']
 
-  fastify.post(
-    '/import/table',
-    {
+  routes.map(route => {
+    const schema = {
       schema: {
-        body: models.table.importSchema
+        body: models[route].importSchema
       },
       response: models.template.response
-    },
-    (request, reply) => {
-      handleExport(fastify, request, reply)
     }
-  )
-
-  fastify.post(
-    '/import/view',
-    {
-      schema: {
-        body: models.view.importSchema
-      },
-      response: models.template.response
-    },
-    (request, reply) => {
-      handleExport(fastify, request, reply)
-    }
-  )
-
-  fastify.post(
-    '/import/data',
-    {
-      schema: {
-        body: models.data.importSchema
-      },
-      response: models.template.response
-    },
-    (request, reply) => {
-      handleExport(fastify, request, reply)
-    }
-  )
+    fastify.post(`/import/${route}`, schema, (request, reply) => handleImport(fastify, request, reply))
+  })
 
   next()
 }

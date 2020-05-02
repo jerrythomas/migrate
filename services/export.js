@@ -24,57 +24,17 @@ function handleExport (fastify, request, reply) {
 }
 
 module.exports = (fastify, opts, next) => {
-  fastify.post(
-    '/export/schema',
-    {
-      schema: {
-        body: models.schema.exportSchema
-      },
-      response: models.template.response
-    },
-    (request, reply) => {
-      handleExport(fastify, request, reply)
-    }
-  )
+  const routes = ['schema', 'table', 'view', 'data']
 
-  fastify.post(
-    '/export/table',
-    {
+  routes.map(route => {
+    const schema = {
       schema: {
-        body: models.table.exportSchema
+        body: models[route].exportSchema
       },
       response: models.template.response
-    },
-    (request, reply) => {
-      handleExport(fastify, request, reply)
     }
-  )
-
-  fastify.post(
-    '/export/view',
-    {
-      schema: {
-        body: models.view.exportSchema
-      },
-      response: models.template.response
-    },
-    (request, reply) => {
-      handleExport(fastify, request, reply)
-    }
-  )
-
-  fastify.post(
-    '/export/data',
-    {
-      schema: {
-        body: models.data.exportSchema
-      },
-      response: models.template.response
-    },
-    (request, reply) => {
-      handleExport(fastify, request, reply)
-    }
-  )
+    fastify.post(`/export/${route}`, schema, (request, reply) => handleExport(fastify, request, reply))
+  })
 
   next()
 }
