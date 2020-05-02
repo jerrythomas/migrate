@@ -338,27 +338,8 @@ test('Invalid payload', async (t) => {
       },
       expected: [
         'body.data should NOT have fewer than 1 properties'
-        // `body.schema should match pattern "${constants.SNAKE_CASE_PATTERN}"`,
-        // `body.table should match pattern "${constants.SNAKE_CASE_PATTERN}"`
       ]
     }
-    // {
-    //   name: "Invalid column names",
-    //   route: "/import/data",
-    //   body: {
-    //     object: "data",
-    //     schema: "schema_name",
-    //     table: "table_name",
-    //     data: {
-    //       "column Name -": "x",
-    //       "CamelCol": "y"
-    //     }
-    //   },
-    //   expected: [
-    //     "\"column Name -\" is not in snakecase",
-    //     "\"CamelCol\" is not in snakecase"
-    //   ]
-    // }
   ]
 
   t.plan(scenarios.length)

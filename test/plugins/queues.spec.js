@@ -156,11 +156,12 @@ test('Mock queues', async (t) => {
   }
 
   const queues = {}
+  const handler = function (fasify, job, done) { done() }
 
   queueNames.forEach((queueName) => {
     queues[queueName] = taskNames.map((task) => ({
       name: task,
-      handler (fasify, job, done) { done() }
+      handler
     }))
   })
   t.plan(1 + Object.keys(expected).length)

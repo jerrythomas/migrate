@@ -1,5 +1,6 @@
 
 const models = require('../models')
+const { priorities } = require('../common/constants')
 
 function handleExport (fastify, request, reply) {
   const initiatedAt = new Date()
@@ -9,18 +10,11 @@ function handleExport (fastify, request, reply) {
     initiatedAt: initiatedAt.toISOString(),
     data: request.body
   }
-  // find the task name from request route
+
   // Submit processing task to queue
-  // try {
-  //   let mapping = fastify.mapping()
-  //   fastify.queues[fastify.mapping.exportQueue]
-  //          .add(request.body, priorities)
-  //
-  // } catch (err) {
-  //   result.message = 'Could not submit task'
-  //   result.error = err.message,
-  //   result.data = request.body
-  // }
+  const task = request.raw.url.split('/').pop().toLowerCase()
+  fastify.queues[fastify.mapping.exportQueue]
+    .add(task, request.body, priorities[task])
 
   const completedAt = new Date()
   result.completedAt = completedAt.toISOString()

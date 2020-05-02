@@ -1,107 +1,149 @@
-{
-  "job": {
-    "data": {
-      "names": [
-        "exp_data",
-        "no_such_schema"
-      ],
-      "drop": true
-    }
+[
+  {
+     "input":{
+        "data":{
+           "names":[]
+        }
+     },
+     "output":{
+        "data":{
+           "names":[],
+           "drop":true
+        },
+        "errors":[
+           ".names should NOT have fewer than 1 items"
+        ],
+        "message":"Input data does not match expected format.",
+        "name":"ValidationError"
+     },
+     "error":true
   },
-  "expected": {
-    "status": "ok",
-    "warnings": [
-      "\"no_such_schema\" does not contain any tables to export",
-      "\"exp_dep\" has referenced tables which will be exported."
-    ],
-    "jobs": [
-      {
-        "queue": {
-          "name": "import-postgres"
-        },
-        "name": "schema",
-        "data": {
-          "object": "schema",
-          "names": [
-            "exp_data",
-            "exp_dep",
-            "no_such_schema"
-          ]
-        },
-        "opts": {
-          "priority": 1
+  {
+     "input":{
+        "data":{
+           "names":[
+              "x"
+           ]
         }
+     },
+     "output":{
+        "data":{
+           "names":[
+              "x"
+           ],
+           "drop":true
+        },
+        "message":"Nothing to export matching schemas",
+        "name":"ValidationError",
+        "errors":[]
+     },
+     "error":true
+  },
+   {
+      "input":{
+         "data":{
+            "names":[
+               "exp_data",
+               "no_such_schema"
+            ],
+            "drop":true
+         }
       },
-      {
-        "queue": {
-          "name": "export-mysql"
-        },
-        "name": "table",
-        "data": {
-          "table": "no_fk_data",
-          "schema": "exp_data",
-          "object": "table"
-        },
-        "opts": {
-          "priority": 2
-        }
-      },
-      {
-        "queue": {
-          "name": "export-mysql"
-        },
-        "name": "table",
-        "data": {
-          "table": "self_fk_data",
-          "schema": "exp_data",
-          "object": "table"
-        },
-        "opts": {
-          "priority": 2
-        }
-      },
-      {
-        "queue": {
-          "name": "export-mysql"
-        },
-        "name": "table",
-        "data": {
-          "table": "dep_lookup",
-          "schema": "exp_dep",
-          "object": "table"
-        },
-        "opts": {
-          "priority": 2
-        }
-      },
-      {
-        "queue": {
-          "name": "export-mysql"
-        },
-        "name": "table",
-        "data": {
-          "table": "has_fk_data",
-          "schema": "exp_data",
-          "object": "table"
-        },
-        "opts": {
-          "priority": 3
-        }
-      },
-      {
-        "queue": {
-          "name": "export-mysql"
-        },
-        "name": "table",
-        "data": {
-          "table": "l2_fk_data",
-          "schema": "exp_data",
-          "object": "table"
-        },
-        "opts": {
-          "priority": 4
-        }
+      "output":{
+         "status":"ok",
+         "warnings":[
+            "\"no_such_schema\" does not contain any tables to export",
+            "\"exp_dep\" has referenced tables which will be exported."
+         ],
+         "jobs":[
+            {
+               "queue":{
+                  "name":"import-postgres"
+               },
+               "name":"schema",
+               "data":{
+                  "object":"schema",
+                  "names":[
+                     "exp_data",
+                     "exp_dep",
+                     "no_such_schema"
+                  ]
+               },
+               "opts":{
+                  "priority":1
+               }
+            },
+            {
+               "queue":{
+                  "name":"export-mysql"
+               },
+               "name":"table",
+               "data":{
+                  "table":"no_fk_data",
+                  "schema":"exp_data",
+                  "object":"table"
+               },
+               "opts":{
+                  "priority":2
+               }
+            },
+            {
+               "queue":{
+                  "name":"export-mysql"
+               },
+               "name":"table",
+               "data":{
+                  "table":"self_fk_data",
+                  "schema":"exp_data",
+                  "object":"table"
+               },
+               "opts":{
+                  "priority":2
+               }
+            },
+            {
+               "queue":{
+                  "name":"export-mysql"
+               },
+               "name":"table",
+               "data":{
+                  "table":"dep_lookup",
+                  "schema":"exp_dep",
+                  "object":"table"
+               },
+               "opts":{
+                  "priority":2
+               }
+            },
+            {
+               "queue":{
+                  "name":"export-mysql"
+               },
+               "name":"table",
+               "data":{
+                  "table":"has_fk_data",
+                  "schema":"exp_data",
+                  "object":"table"
+               },
+               "opts":{
+                  "priority":3
+               }
+            },
+            {
+               "queue":{
+                  "name":"export-mysql"
+               },
+               "name":"table",
+               "data":{
+                  "table":"l2_fk_data",
+                  "schema":"exp_data",
+                  "object":"table"
+               },
+               "opts":{
+                  "priority":4
+               }
+            }
+         ]
       }
-    ]
-  }
-}
+   }
+]

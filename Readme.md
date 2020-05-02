@@ -26,33 +26,28 @@ Application is configuration driven and the following configurations need to be 
 
 ### YAML Configurtion
 
-The yaml configurations can be used to identify the source and the target. The source database type can be specified using the `protocol` attribute. The `connectionString` attribute specifies the environment variable which will be used for connecting to the appropriate databases.
-
-```yaml
-source:
-  database: mysql
-  connectionString: SOURCE_DB_URL
-
-target:
-  database: postgres
-  connectionString: TARGET_DB_URL
-
-```
+The config folder contains the application default configurations.
 
 ### Environment Variables
 
 * CLUSTER_SIZE: Control the number of nodes in the cluster. The default is to use the number of cores available.
 * REDIS_HOST: Host for Redis
 * REDIS_PORT: Port for Redis
+* SOURCE_DB: Dialect for the source database
+* TARGET_DB: Dialect for the target database
 * SOURCE_DB_URL: Database connection url for source
 * TARGET_DB_URL: Database connection url for target
+* QUEUE_CONCURRENCY: number of concurrent tasks per queue
 
 ```bash
+TARGET_DB=postgres
 TARGET_DB_URL=postgres://user@localhost/databse
+SOURCE_DB=mysql
 SOURCE_DB_URL=mysql://user:password@localhost/database
 REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
-#CLUSTER_SIZE=2
+CLUSTER_SIZE=2
+QUEUE_CONCURRENCY=1
 ```
 
 ## Running
@@ -61,11 +56,19 @@ REDIS_PORT=6379
 npm run cluster
 ```
 
-### Monitor
+### To Do
 
-The progress can be tracked using Grafana dashboards.
+* Configure tracking health using Grafana dashboards. Might be possible to track queue status using Grafana.
+* Add data and references export processors for mysql
+* Add import processors for postgres.
+* Move common code to `lib`
+* Restructure tests to use docker images for databases
+* Add Travis integration
+* Add badges to readme.
 
 ### Notes
 
-* Coverage of 100% does not mean that all scenarios are tested. It just means that every line of code is executed during one test or other.
-* I have no idea how to test `cluster.js`. 
+* I have no idea how to test `cluster.js`.
+* `nyc 14.x` is incompatible with `node-jq`. Added `nyc 15` as dev dependency
+* `fastify-mysql` in promise mode does not release connection. This causes tap tests to timeout
+* Tests depend on environment variables. load `.env` before running tests

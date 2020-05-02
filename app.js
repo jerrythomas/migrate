@@ -74,6 +74,7 @@ module.exports = function app (fastify, opts, next) {
       fastify.register(FastifyPostgres, options.source)
       break
     default:
+      // todo: unsupported. should raise error
       break
   }
 
@@ -85,6 +86,7 @@ module.exports = function app (fastify, opts, next) {
   //     fastify.register(FastifyPostgres, options.target);
   //     break;
   //   default:
+  //     // todo: unsupported. should raise error
   //     break;
   // }
 

@@ -13,10 +13,8 @@ async function exportSchemas (fastify, job) {
   const errors = fastify.validateSchema(schema.exportSchema, job.data)
 
   if (errors.length > 0) {
-    throw new ValidationError('Input data does not match expected format.', { errors })
+    throw new ValidationError('Input data does not match expected format.', job.data, errors)
   }
-
-  // try {
 
   const [rows] = await db.query(queries.tables, [job.data.names])
 
@@ -26,7 +24,7 @@ async function exportSchemas (fastify, job) {
   // let result = transform(rows)
 
   if (result.schema.names.length === 0) {
-    throw new ValidationError('Nothing to export matching schemas', { schemas: job.data.names })
+    throw new ValidationError('Nothing to export matching schemas', job.data)
   }
 
   const missing = job.data.names.filter((name) => !result.schema.names.includes(name))

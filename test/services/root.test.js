@@ -8,7 +8,6 @@ test('default root route', async (t) => {
     url: '/'
   })
   t.deepEqual(JSON.parse(res.payload), { root: true })
-  // await app.close();
   t.end()
 })
 
@@ -21,6 +20,5 @@ test('Test undefined env', async (t) => {
     url: '/'
   })
   t.deepEqual(JSON.parse(res.payload), { root: true })
-  // await app.close();
   t.end()
 })

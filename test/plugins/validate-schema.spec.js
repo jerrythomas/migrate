@@ -258,16 +258,11 @@ test('Snake case validations', (t) => {
     t.error(err)
     scenarios.forEach((scenario) => {
       let errors = []
-      try {
-        // const expected = scenario.expected || scenario.body;
-        errors = app.validateSchema(scenario.schema, scenario.body)
-        if (scenario.expected) {
-          t.same(scenario.body, scenario.expected)
-        }
-        t.same(errors, scenario.errors, scenario.message)
-      } catch (e) {
-        t.error(e)
+      errors = app.validateSchema(scenario.schema, scenario.body)
+      if (scenario.expected) {
+        t.same(scenario.body, scenario.expected)
       }
+      t.same(errors, scenario.errors, scenario.message)
     })
     app.close()
   })

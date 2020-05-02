@@ -33,9 +33,8 @@ async function exportTable (fastify, job) { // }, done) {
   const jobs = []
   const errors = fastify.validateSchema(table.exportSchema, job.data)
 
-  // try {
   if (errors.length > 0) {
-    throw new ValidationError(messages.UNEXPECTED_FORMAT, { errors })
+    throw new ValidationError(messages.UNEXPECTED_FORMAT, job.data, errors)
   }
 
   const opts = { priority: job.opts.priority }

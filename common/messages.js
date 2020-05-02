@@ -3,7 +3,8 @@ const messages = {
   MAPPING_NOT_DEFINED: 'Source Target mapping has not been defined.',
   MAPPING_INVALID: 'Source Target mapping is not valid.',
   SCHEMA_IS_NULL: 'Validation schema is null or undefined',
-  DATA_IS_NULL: 'Data is null or undefined'
+  DATA_IS_NULL: 'Data is null or undefined',
+  UNEXPECTED_FORMAT: 'Input data does not match expected format.'
 }
 
 module.exports = messages

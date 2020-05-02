@@ -2,6 +2,30 @@
   {
     "input": {
       "data": {
+        "table": "",
+        "drop": false
+      },
+      "opts": {
+        "priority": 2
+      }
+    },
+    "output": {
+      "data": {
+        "table": "",
+        "drop": false
+      },
+      "errors": [
+        " should have required property 'schema'",
+        ".table should NOT be shorter than 1 characters"
+      ],
+      "message": "Input data does not match expected format.",
+      "name": "ValidationError"
+    },
+    "error": true
+  },
+  {
+    "input": {
+      "data": {
         "table": "no_fk_data",
         "schema": "exp_data",
         "object": "table",

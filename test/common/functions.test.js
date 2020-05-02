@@ -168,15 +168,13 @@ test('Force snake case', (t) => {
           expected.properties.schema.pattern = constants.SNAKE_CASE_PATTERN
           expected.properties.view.pattern = constants.SNAKE_CASE_PATTERN
           break
-        case 'data':
+        default: // 'data'
           expected.properties.schema.pattern = constants.SNAKE_CASE_PATTERN
           expected.properties.table.pattern = constants.SNAKE_CASE_PATTERN
           expected.properties.data = merge(
             expected.properties.data,
             scenario.override.properties.data
           )
-          break
-        default:
           break
       }
     }
