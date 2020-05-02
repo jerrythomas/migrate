@@ -64,7 +64,7 @@ module.exports = function app (fastify, opts, next) {
   fastify.register(FastifyCompress)
   fastify.register(FastifySwagger, options.swagger)
   fastify.register(UnderPressure, options.health)
-  fastify.register(FastifyRedis, options.redis)
+  fastify.register(FastifyRedis)//, options.redis)
 
   switch (options.source.database) {
     case 'mysql':
