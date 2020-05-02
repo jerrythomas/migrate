@@ -1,23 +1,23 @@
 [![Build Status](https://travis-ci.org/jerrythomas/migrate.svg?branch=master)](https://travis-ci.org/jerrythomas/migrate.svg?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/jerrythomas/migrate/badge.svg)](https://coveralls.io/github/jerrythomas/migrate)
 ![David](https://img.shields.io/david/jerrythomas/migrate)
 [![Known Vulnerabilities](https://snyk.io/test/github/jerrythomas/migrate/badge.svg)](https://snyk.io/test/github/jerrythomas/migrate)
 [![Maintainability](https://api.codeclimate.com/v1/badges/86a5815e23a6c3313a4b/maintainability)](https://codeclimate.com/github/jerrythomas/migrate/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/86a5815e23a6c3313a4b/test_coverage)](https://codeclimate.com/github/jerrythomas/migrate/test_coverage)
+[![Coverage Status](https://coveralls.io/repos/github/jerrythomas/migrate/badge.svg)](https://coveralls.io/github/jerrythomas/migrate)
 
 # Migrate database
 
-Migrating from one database to another is a difficult task. This reposiitory is an experimental implementation that attempts to do this using a combination of [fastify](https://www.fastify.io/) & [bull](https://optimalbits.github.io/bull/).
+This reposiitory is an experimental implementation that attempts migrate objects from one database to another using a combination of [fastify](https://www.fastify.io/) & [bull](https://optimalbits.github.io/bull/).
 
 This application uses fastify for providing rest apis for migration. The api's in turn push tasks into bull queues and the workers process the data to perform the export and import activities.
 
-To perform migration there is a source database and a target database. Objects from source are exported and passed on as tasks for import. The aim is to support migration between mysql, sqlite, mssql and postgres.
+Objects from source database are exported and passed on as tasks for import. The aim is to support migration between mysql, sqlite, mssql and postgres.
 
 Application currently provides support for migration between the following
 
-| Source | Target   | Notes |
-|--------|----------|-------|
-| mysql  | postgres |       |
+| Source | Target   | Notes       |
+|--------|----------|-------------|
+| mysql  | postgres | in-progress |
 
 ## Setup
 
