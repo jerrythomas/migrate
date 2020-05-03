@@ -61,11 +61,23 @@ function findQueueHandlers (opts, log) {
   return handlers
 }
 
-function FastifyBull (fastify, opts, next) {
+function buildQueues (fastify, queueHandlers) {
   const taskQueues = {}
+
+  Object.entries(queueHandlers).forEach(([name, tasks]) => {
+    const taskQ = new Queue(name, { connection: fastify.redis })
+    tasks.forEach((task) => {
+      taskQ.process(task.name, task.concurrency || 1, task.handler)
+    })
+    taskQueues[name] = taskQ
+  })
+
+  return taskQueues
+}
+
+function FastifyBull (fastify, opts, next) {
   let queueHandlers = {}
 
-  // console.log('queue options', opts)
   const mockHandlers = opts.mock || false
   // Support mocking handlers for tests.
   if (mockHandlers) {
@@ -78,14 +90,6 @@ function FastifyBull (fastify, opts, next) {
     queueHandlers = findQueueHandlers(handlerOpts, fastify.log)
   }
 
-  Object.entries(queueHandlers).forEach(([name, tasks]) => {
-    const taskQ = new Queue(name, { connection: fastify.redis })
-    tasks.forEach((task) => {
-      taskQ.process(task.name, task.concurrency || 1, task.handler)
-    })
-    taskQueues[name] = taskQ
-  })
-
   fastify.addHook('onClose', (instance, done) => {
     Object.values(instance.queues).forEach((queue) => {
       instance.log.info({ msg: 'Closing queue', queue: queue.name })
@@ -94,7 +98,7 @@ function FastifyBull (fastify, opts, next) {
     done()
   })
 
-  fastify.decorate('queues', taskQueues)
+  fastify.decorate('queues', buildQueues(fastify, queueHandlers))
   next()
 }
 

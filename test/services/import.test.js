@@ -372,6 +372,11 @@ test('Valid payload', async (t) => {
         names: [
           'sc'
         ]
+      },
+      output: {
+        queue: { name: 'import-postgres' },
+        name: 'schema',
+        opts: { priority: 1 }
       }
     },
     {
@@ -432,6 +437,11 @@ test('Valid payload', async (t) => {
             ]
           }
         ]
+      },
+      output: {
+        queue: { name: 'import-postgres' },
+        name: 'table',
+        opts: { priority: 2 }
       }
     },
     {
@@ -443,6 +453,11 @@ test('Valid payload', async (t) => {
         view: 'all_animals_vw',
         code: 'select * from tab;',
         drop: false
+      },
+      output: {
+        queue: { name: 'import-postgres' },
+        name: 'view',
+        opts: { priority: 4 }
       }
     },
     {
@@ -461,6 +476,11 @@ test('Valid payload', async (t) => {
           array_col: [],
           bool_col: true
         }
+      },
+      output: {
+        queue: { name: 'import-postgres' },
+        name: 'data',
+        opts: { priority: 3 }
       }
     }
   ]
@@ -469,8 +489,8 @@ test('Valid payload', async (t) => {
     'completedAt',
     'duration'
   ]
-  t.plan(6 * scenarios.length)
-  const app = build(t)
+  t.plan(7 * scenarios.length)
+  const app = build(t, true)
   await app.ready()
   const cases = await scenarios.map(async (scenario) => {
     // let expected = scenario.body
@@ -490,7 +510,7 @@ test('Valid payload', async (t) => {
     keys.forEach((key) => {
       t.ok(Object.keys(payload).includes(key))
     })
-    // t.deepEqual(payload.data, expected)
+    t.deepEqual(payload.data, scenario.output)
   })
 
   await Promise.all(cases)

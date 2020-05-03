@@ -80,9 +80,27 @@ function cacheTree (dir = '.', include) {
   tree = omitBy(tree, isNil)
   return (Object.keys(tree).length === 0) ? null : tree
 }
+
+async function wrapPerformance (message, action) {
+  const initiatedAt = new Date()
+  const result = {
+    statusCode: 200,
+    message,
+    initiatedAt: initiatedAt.toISOString()
+  }
+
+  result.data = await action()
+
+  const completedAt = new Date()
+  result.completedAt = completedAt.toISOString()
+  result.duration = (completedAt - initiatedAt) / 1000
+  return result
+}
+
 module.exports = {
   toSnakeCase,
   renameKeys,
   getSchema,
-  cacheTree
+  cacheTree,
+  wrapPerformance
 }

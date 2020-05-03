@@ -207,6 +207,15 @@ test('Valid payload', async (t) => {
         names: [
           'sc'
         ]
+      },
+      output: {
+        queue: {
+          name: 'export-mysql'
+        },
+        name: 'schema',
+        opts: {
+          priority: 1
+        }
       }
     },
     {
@@ -216,6 +225,15 @@ test('Valid payload', async (t) => {
         object: 'table',
         schema: 'sc',
         table: 'test'
+      },
+      output: {
+        queue: {
+          name: 'export-mysql'
+        },
+        name: 'table',
+        opts: {
+          priority: 2
+        }
       }
     },
     {
@@ -225,6 +243,15 @@ test('Valid payload', async (t) => {
         object: 'view',
         schema: 'sc',
         view: 'test'
+      },
+      output: {
+        queue: {
+          name: 'export-mysql'
+        },
+        name: 'view',
+        opts: {
+          priority: 4
+        }
       }
     },
     {
@@ -234,6 +261,15 @@ test('Valid payload', async (t) => {
         object: 'data',
         schema: 'sc',
         table: 'test'
+      },
+      output: {
+        queue: {
+          name: 'export-mysql'
+        },
+        name: 'data',
+        opts: {
+          priority: 3
+        }
       }
     }
   ]
@@ -244,12 +280,12 @@ test('Valid payload', async (t) => {
   ]
 
   t.plan(7 * scenarios.length)
-  const app = build(t)
+  const app = build(t, true)
   await app.ready()
 
   const cases = await scenarios.map(async (scenario) => {
-    const expected = scenario.body
-    if (scenario.route !== '/export/data') expected.drop = true
+    // const expected = scenario.body
+    // if (scenario.route !== '/export/data') expected.drop = true
 
     const res = await app.inject({
       method: 'post',
@@ -263,7 +299,7 @@ test('Valid payload', async (t) => {
     keys.forEach((key) => {
       t.ok(Object.keys(payload).includes(key))
     })
-    t.deepEqual(payload.data, expected)
+    t.deepEqual(payload.data, scenario.output)
   })
   await Promise.all(cases)
   t.end()

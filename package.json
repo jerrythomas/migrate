@@ -12,12 +12,21 @@
     "start": "fastify start -l info app.js",
     "dev": "fastify start -w -l info -P app.js",
     "cluster": "node -r dotenv/config cluster.js",
-    "lint": "standard --fix"
+    "lint": "standard --fix",
+    "codecov": "codecov"
   },
   "tap": {
     "test-regex": ".*\\.(tests?|spec)\\.([mc]js|[jt]sx?)$",
     "nyc-arg": [
       "--exclude=zzz"
+    ]
+  },
+  "nyc": {
+    "exclude": [
+      "**/*.spec.js",
+      "**/*.test.js",
+      "tmp/**",
+      "zzz/**"
     ]
   },
   "repository": {
@@ -49,6 +58,7 @@
     "under-pressure": "^3.2.1"
   },
   "devDependencies": {
+    "codecov": "^3.6.5",
     "dotenv": "^8.2.0",
     "ioredis": "^4.16.3",
     "nyc": "^15.0.1",
