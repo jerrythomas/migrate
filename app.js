@@ -15,18 +15,13 @@ const FastifyPostgres = require('fastify-postgres')
 
 const validators = require('./common/validators')
 
-function addDatabase (fastify, connectionInfo) {
-  switch (connectionInfo.database) {
-    case 'mysql':
-      fastify.register(FastifyMysql, connectionInfo)
-      break
-    case 'postgres':
-      fastify.register(FastifyPostgres, connectionInfo)
-      break
-    default:
-      // todo: unsupported. should raise error
-      break
+function addDatabase (fastify, options) {
+  if (options.database === 'mysql') {
+    fastify.register(FastifyMysql, options)
+  } else if (options.database === 'postgres') {
+    fastify.register(FastifyPostgres, options)
   }
+  // throw new ValidationError(`Unsupported database`, options)
 }
 
 function configureAjv (fastify) {
