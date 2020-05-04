@@ -3,7 +3,7 @@ const fs = require('fs')
 const rimraf = require('rimraf')
 const { test } = require('tap')
 const { cacheTree } = require('../../common/functions')
-const ValidationError = require('../../common/errors')
+const { ValidationError } = require('../../lib/errors')
 const { buildTree } = require('../helper')
 
 test('Handle invalid or empty paths.', async (t) => {

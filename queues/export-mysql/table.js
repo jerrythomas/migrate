@@ -1,12 +1,8 @@
-// const jq = require('node-jq');
-const { pick } = require('lodash')
+const { merge, pick } = require('lodash')
 const jq = require('node-jq')
 const { table } = require('../../models')
 const messages = require('../../common/messages')
-const ValidationError = require('../../common/errors')
-// const messages = {
-//   UNEXPECTED_FORMAT: 'Input data does not match expected format.'
-// }
+const { ValidationError } = require('../../lib/errors')
 
 // function cleanupKeys(item, pattern='') {
 //   let modified = {}
@@ -41,7 +37,7 @@ async function exportTable (fastify, job) { // }, done) {
   const [columns] = await db.query(queries.columns, [job.data.schema, job.data.table])
   const [key] = await db.query(queries.key, [job.data.schema, job.data.table])
   const [indexes] = await db.query(queries.indexes, [job.data.schema, job.data.table])
-  let result = { columns, key, indexes }
+  let result = merge({ columns, key, indexes }, job.data)
 
   // clean up key names
   result = await jq.run(fastify.scripts.jq.table,
@@ -51,7 +47,6 @@ async function exportTable (fastify, job) { // }, done) {
   let submitted = await fastify.queues[fastify.mapping.importQueue]
     .add('table', result, opts)
 
-  // console.log(submitted)
   if (process.env.NODE_ENV === 'test') {
     jobs.push(pick(submitted, ['name', 'data', 'opts.priority', 'queue.name']))
   }

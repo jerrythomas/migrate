@@ -1,7 +1,7 @@
 const { test } = require('tap')
 const Fastify = require('fastify')
 const scriptsPlugin = require('../../plugins/scripts')
-const ValidationError = require('../../common/errors')
+const { ValidationError } = require('../../lib/errors')
 
 test('Scripts plugin works standalone', async (t) => {
   const fastify = Fastify()
@@ -11,8 +11,8 @@ test('Scripts plugin works standalone', async (t) => {
 
   t.plan(2)
   await fastify.ready()
-  t.same(Object.keys(fastify.scripts), ['jq', 'sql'])
-  t.same(Object.keys(fastify.scripts.sql.mysql), ['columns', 'data', 'indexes', 'key', 'references', 'tables'])
+  t.same(Object.keys(fastify.scripts), ['ddl', 'jq', 'sql'])
+  t.same(Object.keys(fastify.scripts.sql.mysql), ['columns', 'data', 'get_tables', 'indexes', 'insert', 'key', 'references', 'tables'])
   t.end()
 })
 
@@ -24,8 +24,8 @@ test('Scripts plugin works standalone', async (t) => {
 
   t.plan(2)
   await fastify.ready()
-  t.same(Object.keys(fastify.scripts), ['jq', 'sql'])
-  t.same(Object.keys(fastify.scripts.sql.mysql), ['columns', 'data', 'indexes', 'key', 'references', 'tables'])
+  t.same(Object.keys(fastify.scripts), ['ddl', 'jq', 'sql'])
+  t.same(Object.keys(fastify.scripts.sql.mysql), ['columns', 'data', 'get_tables', 'indexes', 'insert', 'key', 'references', 'tables'])
   t.end()
 })
 

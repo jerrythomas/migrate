@@ -12,15 +12,24 @@ const FastifyMetrics = require('fastify-metrics')
 const FastifyMysql = require('fastify-mysql')
 const FastifyPostgres = require('fastify-postgres')
 
-const { merge } = require('lodash')
+// const { merge } = require('lodash')
 const validators = require('./common/validators')
 
-module.exports = function app (fastify, opts, next) {
-  // config returns a read only object
-  const NODE_ENV = process.env.NODE_ENV || 'dev'
+function addDatabase (fastify, connectionInfo) {
+  switch (connectionInfo.database) {
+    case 'mysql':
+      fastify.register(FastifyMysql, connectionInfo)
+      break
+    case 'postgres':
+      fastify.register(FastifyPostgres, connectionInfo)
+      break
+    default:
+      // todo: unsupported. should raise error
+      break
+  }
+}
 
-  // || config.get('source.connectionString')
-
+function configureAjv (fastify) {
   const ajv = new Ajv({
     // the fastify defaults
     removeAdditional: true,
@@ -31,7 +40,17 @@ module.exports = function app (fastify, opts, next) {
     // any other options
     // ...
   })
+  Object.keys(validators).forEach((keyword) => {
+    ajv.addKeyword(keyword, {
+      validate: validators[keyword],
+      errors: true
+    })
+  })
 
+  fastify.setSchemaCompiler((schema) => ajv.compile(schema))
+}
+
+function pluginOptions () {
   const options = {
     swagger: { ...config.get('swagger') },
     health: { ...config.get('health') },
@@ -58,6 +77,16 @@ module.exports = function app (fastify, opts, next) {
       threads: process.env.THREADS_PER_QUEUE
     }
   }
+
+  return options
+}
+module.exports = function app (fastify, opts, next) {
+  // config returns a read only object
+  const NODE_ENV = process.env.NODE_ENV || 'dev'
+
+  // || config.get('source.connectionString')
+
+  const options = pluginOptions()
   // Load external plugins
   fastify.register(FastifyNoIcon)
   fastify.register(FastifySensible)
@@ -66,17 +95,8 @@ module.exports = function app (fastify, opts, next) {
   fastify.register(UnderPressure, options.health)
   fastify.register(FastifyRedis)//, options.redis)
 
-  switch (options.source.database) {
-    case 'mysql':
-      fastify.register(FastifyMysql, options.source)
-      break
-    case 'postgres':
-      fastify.register(FastifyPostgres, options.source)
-      break
-    default:
-      // todo: unsupported. should raise error
-      break
-  }
+  configureAjv(fastify)
+  addDatabase(fastify, options.source)
 
   // switch(options.target.database){
   //   case 'mysql':
@@ -90,22 +110,13 @@ module.exports = function app (fastify, opts, next) {
   //     break;
   // }
 
-  Object.keys(validators).forEach((keyword) => {
-    ajv.addKeyword(keyword, {
-      validate: validators[keyword],
-      errors: true
-    })
-  })
-
-  fastify.setSchemaCompiler((schema) => ajv.compile(schema))
-
   // prom client uses some internal registry which is conflicted in parallel test runs
   if (NODE_ENV !== 'test') {
     fastify.register(FastifyMetrics, options.metrics)
   }
 
   // add additional options for custom plugins
-  const pluginOpts = merge(opts, { validators })
+  const pluginOpts = opts // merge(opts, { validators })
 
   // This loads all plugins defined in plugins
   // those should be support plugins that are reused

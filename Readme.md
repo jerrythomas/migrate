@@ -1,9 +1,9 @@
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
 [![Build Status](https://travis-ci.org/jerrythomas/migrate.svg?branch=master)](https://travis-ci.org/jerrythomas/migrate.svg?branch=master)
 ![David](https://img.shields.io/david/jerrythomas/migrate)
-[![Known Vulnerabilities](https://snyk.io/test/github/jerrythomas/migrate/badge.svg)](https://snyk.io/test/github/jerrythomas/migrate)
 [![Maintainability](https://api.codeclimate.com/v1/badges/86a5815e23a6c3313a4b/maintainability)](https://codeclimate.com/github/jerrythomas/migrate/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/86a5815e23a6c3313a4b/test_coverage)](https://codeclimate.com/github/jerrythomas/migrate/test_coverage)
-[![Coverage Status](https://coveralls.io/repos/github/jerrythomas/migrate/badge.svg)](https://coveralls.io/github/jerrythomas/migrate)
+[![Known Vulnerabilities](https://snyk.io/test/github/jerrythomas/migrate/badge.svg)](https://snyk.io/test/github/jerrythomas/migrate)
 
 # Migrate database
 

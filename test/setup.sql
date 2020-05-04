@@ -1,7 +1,12 @@
 drop database if exists exp_data;
 drop database if exists exp_dep;
+drop database if exists test_v8;
+drop database if exists test_v5;
 
+create database test_v8;
+create database test_v5;
 create database exp_dep;
+
 use exp_dep;
 create table dep_lookup
 (

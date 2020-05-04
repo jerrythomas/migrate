@@ -7,7 +7,7 @@ const { cacheTree } = require('../common/functions')
 
 module.exports = fp(function scripts (fastify, opts, next) {
   let scriptPath = 'lib/scripts/'
-  let fileTypes = ['jq', 'sql']
+  let fileTypes = ['jq', 'sql', 'ddl']
 
   if (opts && opts.scripts) {
     scriptPath = opts.scripts.path || scriptPath

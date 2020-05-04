@@ -4,7 +4,7 @@ const path = require('path')
 const { omitBy, isNil } = require('lodash')
 const models = require('../models')
 
-const ValidationError = require('./errors')
+const { ValidationError } = require('../lib/errors')
 
 function toSnakeCase (input) {
   let result = input

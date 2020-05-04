@@ -17,12 +17,12 @@ test('Export tables from mysql', async (t) => {
     try {
       output = await handler(mockApp, scenario.input)
       t.notok(scenario.error)
-      t.same(output, scenario.output)
     } catch (err) {
       t.ok(scenario.error)
-      t.same(pick(err, ['data', 'message', 'name', 'errors']), scenario.output)
+      output = pick(err, ['data', 'message', 'name', 'errors'])
     }
-    return merge(pick(scenario, ['input', 'error']), output)
+    t.same(output, scenario.output)
+    return merge(pick(scenario, ['input', 'error']), { output })
   })
 
   await Promise.all(cases)
@@ -42,14 +42,15 @@ test('No job logs in production/dev', async (t) => {
     try {
       output = await handler(mockApp, scenario.input)
       t.notok(scenario.error)
-      t.same(output, scenario.output)
     } catch (err) {
       t.ok(scenario.error)
-      t.same(pick(err, ['data', 'message', 'name', 'errors']), scenario.output)
+      output = pick(err, ['data', 'message', 'name', 'errors'])
     }
-    return merge(pick(scenario, ['input', 'error']), output)
+    t.same(output, scenario.output)
+    return merge(pick(scenario, ['input', 'error']), { output })
   })
 
   await Promise.all(cases)
+
   t.end()
 })

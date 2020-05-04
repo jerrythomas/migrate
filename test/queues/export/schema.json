@@ -52,8 +52,8 @@
       "output":{
          "status":"ok",
          "warnings":[
-            "\"no_such_schema\" does not contain any tables to export",
-            "\"exp_dep\" has referenced tables which will be exported."
+            "no_such_schema: does not contain any tables to export",
+            "exp_dep: has referenced tables which will be exported"
          ],
          "jobs":[
             {
