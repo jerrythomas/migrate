@@ -1,7 +1,6 @@
 const { test } = require('tap')
-const { build } = require('../../helper')
-const cleanUp = require('../../../queues/export-mysql/cleanup')
-const setUp = require('../../../queues/export-mysql/setup')
+const { build } = require('../helper')
+const mysqlHelper = require('../../lib/mysql')
 
 function findObjectsQuery () {
   const query = `
@@ -25,9 +24,8 @@ function findObjectsQuery () {
 
 async function getObjectsAfterCleanup (mockApp, version) {
   const schema = `test_v${version}`
-  const job = { data: { version } }
 
-  await cleanUp.handler(mockApp, job)
+  await mysqlHelper.cleanup(mockApp, version)
   const [result] = await mockApp.mysql.source.query(findObjectsQuery(), [schema])
 
   return result
@@ -35,12 +33,21 @@ async function getObjectsAfterCleanup (mockApp, version) {
 
 async function getObjectsAfterSetup (mockApp, version) {
   const schema = `test_v${version}`
-  const job = { data: { version } }
 
-  await setUp.handler(mockApp, job)
+  await mysqlHelper.setup(mockApp, version)
   const [result] = await mockApp.mysql.source.query(findObjectsQuery(), [schema])
   return result
 }
+
+test('should fetch the version', async (t) => {
+  const mockApp = build(t, true)
+  await mockApp.ready()
+
+  const version = await mysqlHelper.getMajorVersion(mockApp.mysql.source, 'source')
+  t.ok(version > 0)
+  t.ok(version < 9)
+  t.end()
+})
 
 test('cleanup should not fail for v8+', async (t) => {
   process.env.SOURCE_DB_URL = 'mysql://root@localhost/test_v8'

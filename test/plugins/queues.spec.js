@@ -118,10 +118,8 @@ test('File instead of folder', async (t) => {
 test('Application queues', async (t) => {
   const expected = {
     'export-mysql': [
-      'cleanup',
       'data',
       'schema',
-      'setup',
       'table',
       'view'
     ],

@@ -1,5 +1,6 @@
 const path = require('path')
 const config = require('config')
+
 const Ajv = require('ajv')
 const AutoLoad = require('fastify-autoload')
 const FastifyNoIcon = require('fastify-no-icon')
@@ -12,7 +13,6 @@ const FastifyMetrics = require('fastify-metrics')
 const FastifyMysql = require('fastify-mysql')
 const FastifyPostgres = require('fastify-postgres')
 
-// const { merge } = require('lodash')
 const validators = require('./common/validators')
 
 function addDatabase (fastify, connectionInfo) {
@@ -72,14 +72,12 @@ function pluginOptions () {
       database: process.env.TARGET_DB,
       name: 'target',
       connectionString: process.env.TARGET_DB_URL
-    },
-    queue: {
-      threads: process.env.THREADS_PER_QUEUE
     }
   }
 
   return options
 }
+
 module.exports = function app (fastify, opts, next) {
   // config returns a read only object
   const NODE_ENV = process.env.NODE_ENV || 'dev'
@@ -97,33 +95,19 @@ module.exports = function app (fastify, opts, next) {
 
   configureAjv(fastify)
   addDatabase(fastify, options.source)
-
-  // switch(options.target.database){
-  //   case 'mysql':
-  //     fastify.register(FastifyMysql, options.target);
-  //     break;
-  //   case 'postgres':
-  //     fastify.register(FastifyPostgres, options.target);
-  //     break;
-  //   default:
-  //     // todo: unsupported. should raise error
-  //     break;
-  // }
+  addDatabase(fastify, options.target)
 
   // prom client uses some internal registry which is conflicted in parallel test runs
   if (NODE_ENV !== 'test') {
     fastify.register(FastifyMetrics, options.metrics)
   }
 
-  // add additional options for custom plugins
-  const pluginOpts = opts // merge(opts, { validators })
-
   // This loads all plugins defined in plugins
   // those should be support plugins that are reused
   // through your application
   fastify.register(AutoLoad, {
     dir: path.join(__dirname, 'plugins'),
-    options: { ...pluginOpts }
+    options: { ...opts }
   })
 
   // This loads all plugins defined in services
@@ -134,5 +118,6 @@ module.exports = function app (fastify, opts, next) {
   })
   // Make sure to call next when done
   // Autoloaded decorations are only called at end even if they are written sequentially here
+
   next()
 }
