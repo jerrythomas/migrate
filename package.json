@@ -37,12 +37,12 @@
   "author": "Jerry Thomas <me@jerrythomas.name>",
   "license": "ISC",
   "dependencies": {
-    "ajv": "^6.12.2",
+    "ajv": "^6.12.3",
     "bull": "^3.13.0",
     "config": "^3.3.1",
     "fastify": "^2.15.1",
     "fastify-autoload": "^1.0.0",
-    "fastify-cli": "^1.5.0",
+    "fastify-cli": "^2.0.0",
     "fastify-compress": "^2.0.1",
     "fastify-metrics": "^5.0.1",
     "fastify-mysql": "^1.0.1",
@@ -52,7 +52,7 @@
     "fastify-redis": "^3.3.1",
     "fastify-sensible": "^2.1.1",
     "fastify-swagger": "^2.5.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.16",
     "node-jq": "^1.11.0",
     "pg": "^8.0.3",
     "under-pressure": "^3.2.1"
