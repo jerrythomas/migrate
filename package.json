@@ -13,7 +13,9 @@
     "dev": "fastify start -w -l info -P app.js",
     "cluster": "node -r dotenv/config cluster.js",
     "lint": "standard --fix",
-    "codecov": "codecov"
+    "codecov": "codecov",
+    "snyk-protect": "snyk protect",
+    "prepare": "yarn run snyk-protect"
   },
   "tap": {
     "test-regex": ".*\\.(tests?|spec)\\.([mc]js|[jt]sx?)$",
@@ -55,7 +57,8 @@
     "lodash": "^4.17.16",
     "node-jq": "^1.11.0",
     "pg": "^8.0.3",
-    "under-pressure": "^3.2.1"
+    "under-pressure": "^3.2.1",
+    "snyk": "^1.437.3"
   },
   "devDependencies": {
     "codecov": "^3.6.5",
@@ -65,5 +68,6 @@
     "rimraf": "^3.0.2",
     "standard": "^14.3.3",
     "tap": "^14.10.7"
-  }
+  },
+  "snyk": true
 }
