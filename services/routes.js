@@ -18,8 +18,8 @@ module.exports = (fastify, opts, next) => {
   const routes = ['schema', 'table', 'view', 'data']
   const modes = ['export', 'import']
 
-  modes.map(mode => {
-    routes.map(route => {
+  modes.forEach(mode => {
+    routes.forEach(route => {
       const schema = {
         schema: {
           body: models[route][`${mode}Schema`]
