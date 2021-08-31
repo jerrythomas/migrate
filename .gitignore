@@ -64,3 +64,4 @@ test/types/index.js
 # local environment
 .env
 cc-test-reporter
+zzz
