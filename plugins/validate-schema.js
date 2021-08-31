@@ -17,8 +17,11 @@ function validateSchema (fastify, opts, next) {
     if (errors.length > 0) {
       return errors
     }
-
-    const validator = fastify.schemaCompiler(schema)
+    // fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
+    //   return ajv.compile(schema)
+    // })
+    console.log(schema)
+    const validator = fastify.validatorCompiler(schema)
     const valid = validator(data)
 
     if (!valid && validator.errors) {

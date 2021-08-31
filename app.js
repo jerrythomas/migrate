@@ -42,7 +42,9 @@ function configureAjv (fastify) {
     })
   })
 
-  fastify.setSchemaCompiler((schema) => ajv.compile(schema))
+  fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
+    return ajv.compile(schema)
+  })
 }
 
 function pluginOptions () {
