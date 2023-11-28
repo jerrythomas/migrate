@@ -44,7 +44,7 @@
     "config": "^3.3.6",
     "fastify": "^3.20.2",
     "fastify-autoload": "^3.8.1",
-    "fastify-cli": "^2.13.0",
+    "fastify-cli": "^3.0.0",
     "fastify-compress": "^3.6.0",
     "fastify-metrics": "^6.0.3",
     "fastify-mysql": "^2.1.0",
@@ -55,7 +55,7 @@
     "fastify-sensible": "^3.1.1",
     "fastify-swagger": "^3.5.0",
     "lodash": "^4.17.21",
-    "node-jq": "^1.12.0",
+    "node-jq": "^2.3.5",
     "pg": "^8.7.1",
     "snyk": "^1.695.0",
     "under-pressure": "^5.7.0"
